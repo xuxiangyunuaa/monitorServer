@@ -1,0 +1,110 @@
+2020-08-24 18:09:35  [ vert.x-eventloop-thread-5:84663 ] - [ ERROR ]
+  Unhandled exception
+java.lang.NullPointerException
+	at org.nit.monitorserver.handler.AcquisitionConfig.CommunicationTemplate.lambda$EDT_TDR_CFGCTR_MSG$1(CommunicationTemplate.java:80)
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$null$0(JDBCClientImpl.java:152)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:339)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:404)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:886)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:830)
+2020-08-24 18:16:50  [ vert.x-eventloop-thread-5:73421 ] - [ ERROR ]
+  Unhandled exception
+java.lang.NullPointerException
+	at org.nit.monitorserver.handler.AcquisitionConfig.CommunicationTemplate.lambda$EDT_TDR_CFGCTR_MSG$1(CommunicationTemplate.java:80)
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$null$0(JDBCClientImpl.java:152)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:339)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:404)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:886)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:830)
+2020-08-24 18:29:19  [ main:7132 ] - [ ERROR ]
+  指令： collect 格式错误
+2020-08-24 18:30:09  [ vert.x-eventloop-thread-5:56979 ] - [ ERROR ]
+  Unhandled exception
+java.lang.NullPointerException
+	at org.nit.monitorserver.handler.AcquisitionConfig.CommunicationTemplate.lambda$EDT_TDR_CFGCTR_MSG$1(CommunicationTemplate.java:80)
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$null$0(JDBCClientImpl.java:152)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:339)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:404)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:886)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:830)
+2020-08-24 18:57:55  [ vert.x-eventloop-thread-5:58932 ] - [ ERROR ]
+  Unhandled exception
+java.lang.NullPointerException
+	at org.nit.monitorserver.handler.AcquisitionConfig.CommunicationTemplate.lambda$EDT_TDR_CFGCTR_MSG$1(CommunicationTemplate.java:80)
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$null$0(JDBCClientImpl.java:152)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:339)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:404)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:886)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:830)
+2020-08-24 19:14:22  [ vert.x-eventloop-thread-5:50638 ] - [ ERROR ]
+  Unhandled exception
+java.lang.NullPointerException
+	at org.nit.monitorserver.handler.AcquisitionConfig.CommunicationTemplate.lambda$EDT_TDR_CFGCTR_MSG$1(CommunicationTemplate.java:80)
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$null$0(JDBCClientImpl.java:152)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:339)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:404)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:886)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:830)
+2020-08-24 19:35:51  [ main:35284 ] - [ ERROR ]
+  指令： collect 格式错误
+2020-08-24 19:36:37  [ vert.x-eventloop-thread-5:81030 ] - [ ERROR ]
+  Unhandled exception
+java.lang.NullPointerException
+	at org.nit.monitorserver.handler.AcquisitionConfig.CommunicationTemplate.lambda$EDT_TDR_CFGCTR_MSG$1(CommunicationTemplate.java:80)
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$null$0(JDBCClientImpl.java:152)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:339)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:404)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:886)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:830)
+2020-08-24 19:40:12  [ vert.x-acceptor-thread-0:3441 ] - [ ERROR ]
+  java.net.BindException: Address already in use: bind
+2020-08-24 19:41:00  [ vert.x-eventloop-thread-5:51465 ] - [ ERROR ]
+  Unhandled exception
+java.lang.NullPointerException
+	at org.nit.monitorserver.handler.AcquisitionConfig.CommunicationTemplate.lambda$EDT_TDR_CFGCTR_MSG$1(CommunicationTemplate.java:80)
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$null$0(JDBCClientImpl.java:152)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:339)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:404)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:886)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:830)
+2020-08-24 23:01:38  [ main:30197 ] - [ ERROR ]
+  指令： collect 格式错误
+2020-08-24 23:01:43  [ main:34965 ] - [ ERROR ]
+  指令： collect 格式错误
+2020-08-24 23:01:47  [ main:38989 ] - [ ERROR ]
+  指令： show 格式错误
+2020-08-24 23:01:57  [ main:49048 ] - [ ERROR ]
+  指令： show data 格式错误
+2020-08-24 23:02:13  [ main:64486 ] - [ ERROR ]
+  指令： show data 格式错误
+2020-08-24 23:04:31  [ main:20977 ] - [ ERROR ]
+  指令： collect 格式错误
+2020-08-24 23:08:11  [ main:23863 ] - [ ERROR ]
+  指令： collect 格式错误
+2020-08-24 23:08:24  [ main:37657 ] - [ ERROR ]
+  文件： 未找到
+2020-08-24 23:08:29  [ main:41926 ] - [ ERROR ]
+  文件： 未找到
+2020-08-24 23:08:36  [ main:49435 ] - [ ERROR ]
+  文件： 未找到

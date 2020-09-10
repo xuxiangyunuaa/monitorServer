@@ -1,0 +1,367 @@
+﻿// edt message define 
+
+syntax = "proto2";
+
+
+///////////////////////////////////////////////////////////////////////////////////
+message ERR_HEAD_GET
+{
+	required int32 partId = 1;                   //头部信息所在分区
+}
+message ERR_ENTRY_GET
+{
+	required int32 startEntry = 1;                    //起始条目数
+	required int32 reqNum = 2;           				  		//请求获取的条目数
+	required int32 partId = 3;       								  //获取信息所在的分区
+}
+//获取故障记录信息
+message ERR_GET_INFO
+{
+	required int32 errType = 1;                 //故障信息类型
+	optional ERR_HEAD_GET   head = 2;           //获取故障记录信息头部信息
+	optional ERR_ENTRY_GET  entries = 3;        //获取故障记录信息条目信息
+}
+
+//获取空间数据信息
+message IMG_GET_INFO
+{
+	required int32 tid = 1;                 // 获取任务的TCB块的任务Id
+}
+
+//获取同步信息
+message TIMESYN_GET_INFO
+{
+	required int32 timeTag = 1;             // 时间戳获取标志，取值0x74696D65
+}
+//获取命令格式
+message GET_CMD_ST
+{
+	optional ERR_GET_INFO err_getInfo = 1;           //故障记录获取配置信息
+	optional IMG_GET_INFO img_getInfo = 2;           //内存镜像获取配置信息（实现为获取任务的TCB块）
+	optional TIMESYN_GET_INFO time_getInfo = 3;      //同步信息获取配置信息
+}
+///////////////////////////////////////////////////////////////////////////////////
+message CFG_TSKSWT
+{
+	required int32 tskSwId = 1;               //任务切换事件ID
+}
+message CFG_PARTSW
+{
+	required int32 partSwId = 1;               //分区切换事件ID （vx653）
+}
+message CFG_MFSW
+{
+	required int32 mfSwId = 1;               //major frame切换事件ID （vx653）
+}
+
+//时间资源
+message TIMESRC_CFG
+{
+	optional CFG_TSKSWT tskSwtInfo = 1;     //任务切换
+	optional CFG_PARTSW partSwInfo = 2;     //分区切换
+	optional CFG_MFSW   mfswInfo   = 3;     //MF切换
+}
+
+message CFG_TASKSPAWN
+{
+	required int32 tskSpId = 1;               //任务创建事件ID
+}
+message CFG_TASKDELETE
+{
+	required int32 tskDtId = 1;               //任务删除事件ID
+}
+message CFG_IOCREATE
+{
+	required int32 ioCtId = 1;               //IO创建事件ID
+}
+message CFG_IODELETE
+{
+	required int32 ioDtId = 1;               //IO删除事件ID
+}
+message CFG_SEMCREATE
+{
+	required int32 semCtId = 1;               //信号量创建事件ID
+}
+message CFG_SEMDELETE
+{
+	required int32 semDtId = 1;               //信号量删除事件ID
+}
+message CFG_WDCREATE
+{
+	required int32 wdCtId = 1;               //看门狗创建事件ID
+}
+message CFG_WDDELETE
+{
+	required int32 wdDtId = 1;               //看门狗删除事件ID
+}
+message CFG_MSGQCREATE
+{
+	required int32 msgQCtId = 1;               //消息队列创建事件ID
+}
+message CFG_MSGQDELETE
+{
+	required int32 msgQDtId = 1;               //消息队列删除事件ID
+}
+message CFG_MALLOC
+{
+	required int32 mallocId = 1;               //malloc事件ID
+}
+message CFG_MEMPARTCREATE
+{
+	required int32 memPCreateId = 1;               //memPartCreate事件ID
+}
+message CFG_FREE
+{
+	required int32 freeId = 1;               //free事件ID
+}
+message CFG_STACK
+{
+	required int32 stackId = 1;               //stack事件ID
+}
+message CFG_PDMEM
+{
+	required int32 pdMemId = 1;               //周期性内存资源监控事件ID
+	required int64  period = 2;        //周期性内存资源监控事件采集周期
+}
+message CFG_PTIMERCREATE
+{
+	required int32 pTmCrtId = 1;               //POSIX_TIMER创建事件ID
+}
+message CFG_PTIMERDELETE
+{
+	required int32 pTmDetId = 1;       	//POSIX_TIMER删除事件ID
+}
+message CFG_APEXSEMCRE
+{
+	required int32 semaId = 1;               //APEX信号量创建事件ID
+}
+message CFG_APEXBLACRE
+{
+	required int32 blackBoardId = 1;       	//APEX黑板创建事件ID
+}
+message CFG_APEXBUFCRE
+{
+	required int32 bufferId = 1;            //APEXbuffer创建事件ID
+}
+message CFG_APEXPROCCRE
+{
+	required int32 procId = 1;              //APEX进程创建事件ID
+}
+message CFG_APEXEVENTCRE
+{
+	required int32 eventId = 1;             //APEXEVENT创建事件ID
+}
+message CFG_APEXSPORTCRE
+{
+	required int32 sPortId = 1;             //APEXESPORT创建事件ID
+}
+message CFG_APEXQPORTCRE
+{
+	required int32 qPortId = 1;             //APEXQPORT创建事件ID
+}
+
+//空间资源
+message SPACESRC_CFG
+{
+	optional CFG_TASKSPAWN taskSpawnInfo = 1;             //任务创建（内核+分区）
+	optional CFG_TASKDELETE taskDeleteInfo = 2;           //任务删除（内核+分区）
+	optional CFG_IOCREATE ioCreateInfo = 3;               //IO创建（内核）
+	optional CFG_IODELETE ioDeleteInfo = 4;               //IO删除（内核）
+	optional CFG_SEMCREATE semCreateInfo = 5;             //信号量创建（内核+分区）
+	optional CFG_SEMDELETE semDeleteInfo = 6;             //信号量删除（内核+分区）
+	optional CFG_WDCREATE wdCreateInfo = 7;               //看门狗定时器创建（内核+分区）
+	optional CFG_WDDELETE wdDeleteInfo = 8;               //看门狗定时器删除（内核+分区）
+	optional CFG_MSGQCREATE msgQCreateInfo = 9;           //消息队列创建（内核+分区）
+	optional CFG_MSGQDELETE msgQDeleteInfo = 10;          //消息队列删除（内核+分区）
+	optional CFG_MALLOC mallocInfo = 11;                  //malloc函数内存影响（内核+分区）
+	optional CFG_MEMPARTCREATE memPartCreateInfo = 12;    //memPartCreate函数内存影响（内核+分区）
+	optional CFG_FREE freeInfo = 13;                      //free函数内存影响（内核+分区）
+	optional CFG_STACK stackInfo = 14;                    //任务堆栈监控(内核+分区)
+	optional CFG_PDMEM pdMemInfo = 15;                    //周期性内存资源监控(VX6.8中特有)
+
+	optional CFG_APEXSEMCRE semaCreInfo = 16; 						//apex信号量创建
+	optional CFG_APEXBLACRE blackBoardCreInfo = 17;				//apex黑板创建
+	optional CFG_APEXBUFCRE bufferCreInfo = 18;						//apexbuffer创建
+	optional CFG_APEXPROCCRE procCreInfo	= 19;						//apex进程创建
+	optional CFG_APEXEVENTCRE eventCreInfo = 20;					//apex事件创建
+	optional CFG_APEXSPORTCRE sPortCreInfo = 21;					//apex sPort创建
+	optional CFG_APEXQPORTCRE qPortCreInfo = 22;					//apex qPort创建
+	optional CFG_PTIMERCREATE pTimerCreateInfo = 23; 				//POSIX_TIMER创建
+	optional CFG_PTIMERDELETE pTimerDeleteInfo = 24;				//POSIX_TIMER删除
+}
+
+
+
+message CFG_ISR
+{
+	required int32 isrId = 1;                        //中断事件ID
+}
+message CFG_EPT
+{
+	required int32 eptId = 1;                         //异常事件ID
+}
+message CFG_EDR
+{
+	required int32 edrId = 1;                        //edr事件ID
+}
+//系统事件
+message SYSEVT_CFG
+{
+	optional CFG_ISR isrInfo = 1;           //中断事件
+	optional CFG_EPT eptInfo = 2;           //异常事件
+	optional CFG_EDR edrInfo = 3;           //ED&R事件
+}
+
+
+
+
+
+message CFG_OSACSEND
+{
+	required int32 OSACSndId = 1;                        //OSAC发送事件ID
+}
+message CFG_OSACRECV
+{
+	required int32 OSACRcvId = 1;                        //OSAC接收事件ID
+}
+message CFG_MSGQSND
+{
+	required int32 msgQSndId = 1;                     //msgQSend事件ID
+}
+message CFG_MSGQREC
+{
+	required int32 msgQRecId = 1;                     //msgQReceive事件ID
+}
+
+message CFG_APEXRDBLA
+{
+	required int32 rdBlaId = 1;                     //read blackboard事件ID
+}
+message CFG_APEXCLRBLA
+{
+	required int32 clrBlaId = 1;                     //clr blackboard事件ID
+}
+message CFG_APEXDISBLA
+{
+	required int32 disBlaId = 1;                     //display blackboard事件ID
+}
+message CFG_APEXSENDBUF
+{
+	required int32 sendBufId = 1;                     //send buffer事件ID
+}
+message CFG_APEXRECVBUF
+{
+	required int32 recvBufId = 1;                     //recv buffer事件ID
+}
+message CFG_APEXSETEVENT
+{
+	required int32 setEventId = 1;                     //set event事件ID
+}
+message CFG_APEXRESETEVENT
+{
+	required int32 resetEventId = 1;                     //reset event事件ID
+}
+message CFG_APEXWAITEVENT
+{
+	required int32 waitEventId = 1;                     //wait event事件ID
+}
+message CFG_APEXWRSPORT
+{
+	required int32 wrSportId = 1;                     //write s port事件ID
+}
+message CFG_APEXRDSPORT
+{
+	required int32 rdSportId = 1;                     //read s port事件ID
+}
+message CFG_APEXSENDQPORT
+{
+	required int32 sendQportId = 1;                     //send q port事件ID
+}
+message CFG_APEXRECVQPORT
+{
+	required int32 recvQportId = 1;                     //recv q port事件ID
+}
+//数据通信
+message DATACOM_CFG
+{
+	optional CFG_OSACSEND osacSendInfo = 1;         //OSAC中间件6.8特有
+	optional CFG_OSACRECV osacRecvInfo = 2;					//OSAC中间件6.8特有
+	optional CFG_MSGQSND msgQSndInfo = 3;           //msgQSend（内核+分区）
+	optional CFG_MSGQREC msgQRecInfo = 4;           //msgQReceive（内核+分区）
+	
+	optional CFG_APEXRDBLA rdBlaInfo = 5;						//读黑板
+	optional CFG_APEXCLRBLA clrBlaInfo = 6;					//清除黑板
+	optional CFG_APEXDISBLA disBlaInfo = 7;					//显示黑板
+	optional CFG_APEXSENDBUF sendBufInfo = 8;				//发送buffer
+	optional CFG_APEXRECVBUF recvBufInfo = 9;				//接收buffer
+	optional CFG_APEXSETEVENT setEventInfo = 10;		//set event
+	optional CFG_APEXRESETEVENT resetEventInfo = 11;//reset event
+	optional CFG_APEXWAITEVENT waitEventInfo = 12;	//wait event
+	optional CFG_APEXWRSPORT wrSportInfo = 13;			//写S port
+	optional CFG_APEXRDSPORT rdSportInfo = 14;			//读S port
+	optional CFG_APEXSENDQPORT sendQportInfo = 15;	//发送Q port
+	optional CFG_APEXRECVQPORT recvQportInfo = 16;	//接收Q port
+}
+
+//系统检测事件配置
+message SYS_DET_CFG
+{
+	optional TIMESRC_CFG timeSrc_cfg = 1;    //时间资源
+	optional SPACESRC_CFG spaceSrc_cfg = 2;  //空间资源
+	optional SYSEVT_CFG sysEvt_cfg = 3;      //系统事件
+	optional DATACOM_CFG dataCom_cfg = 4;    //数据通信
+
+}
+
+//记录信息管理模块配置信息
+message RCD_MGR_CFG_SUB
+{
+	required int32 min = 1;                 //最小buffer数量
+	required int32 max = 2;                 //最大buffer数量
+	required int32 buffSize = 3;            //每个buffer大小
+	required int32 mode = 4;                //缓冲区上传模式
+	required int32 option = 5;              //缓冲区创建选项
+	required int32 buffMgrPri = 6;          //缓冲区管理任务优先级
+	required int32 buffUpPri = 7;           //缓冲区上传任务优先级
+}
+//记录信息管理模块配置信息
+message RCD_MGR_CFG
+{
+	required int32 rcdMgrId = 1;               //记录信息配置事件ID
+	required RCD_MGR_CFG_SUB subInfo = 2;      //配置信息
+}
+//分区采集配置信息
+message PART_CFG
+{
+	required int32 evtActionAddr = 1;             //evtAction地址
+	required int32 wvEvtClassAddr = 2;            //wvEvtClass地址
+	required int32 wvInstIsOnAddr = 3;            //wvInstIsOn地址
+	required int32 wvObjIsEnabledAddr = 4;        //wvObjIsEnabled地址
+}
+//配置命令格式
+message CFG_CMD_ST
+{
+	optional SYS_DET_CFG sysDet_cfg = 1;     //系统检测事件配置
+	optional RCD_MGR_CFG rcdMgr_cfg = 2;     //记录信息管理模块配置信息
+	optional PART_CFG part_cfg = 3;          //分区采集配置信息
+}
+///////////////////////////////////////////////////////////////////////////////////
+//控制命令格式
+message CTR_CMD_ST
+{
+	required int32 cfgCtrId = 1;      //配置控制事件ID
+	optional int32 runFlag = 2;       //0表示停止，1表示启动
+	optional int32 apexFlag = 3;      //0表示不采集，1表示采集 分区apex信息采集
+	optional int32 posixFlag = 4;     //0表示不采集，1表示采集 分区posix信息采集
+}
+//////////////////////////////////////////////////////总结构体（目标机下发的配置命令）
+
+message EDT_TDR_CFGCTR_MSG
+{
+	optional GET_CMD_ST get_cmd = 1;  //获取命令格式
+	optional CFG_CMD_ST cfg_cmd = 2;  //配置命令格式
+	optional CTR_CMD_ST ctr_cmd = 3;  //控制命令格式
+}
+
+
+

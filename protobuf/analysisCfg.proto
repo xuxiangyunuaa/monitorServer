@@ -1,0 +1,57 @@
+﻿// edt message define
+
+syntax = "proto2";
+
+
+/*特定空间操作对内存资源的影响 */
+message EVT_MEM_EFFECT_CFG
+{
+	required int32 optId = 1;		            //操作编号
+	required int32 evtId = 2;	                //待分析事件的ID
+	required int32 pdId = 3;	                //待分析事件所在分区pd
+	required int64 startTime = 4;	            //分析的起始时间
+	required int64 endTime = 5;	                //*分析的结束时间
+}
+
+/*任务及各种空间操作对内存资源的影响 */
+message TSK_MEM_EFFECT_CFG
+{
+	required int32 optId = 1;		            //操作编号
+	required int32 pdId = 2;		            //待分析事件所在分区pd
+	required int64 startTime = 3;	            //分析的起始时间
+	required int64 endTime = 4;	    		    //分析的结束时间
+}
+
+/*特定函数的执行用时 */
+message FUNC_TIMEUSE_STATIC
+{
+	required int32 optId = 1;		            //操作编号
+	required int32 funcId = 2;		            //函数ID，该ID为用户使用时指定
+	required int32 pdId = 3;	                //待分析事件所在分区pd
+	required int64 startTime = 4;	            //分析的起始时间
+	required int64 endTime = 5;	    		    //分析的结束时间
+}
+//分区运行的时间余量和时间信息  vx653
+message PART_RUNTIME_ANALYSIS_CFG{
+	required int32 optId =     1;   //操作编号
+	required int64 startTime = 2;	//分析的起始时间
+	required int64 endTime =   3;	//分析的结束时间
+}
+
+//一段时间内各个任务的运行时间  vx6.8
+message TASK_RUNTIME_ANALYSIS_CFG{
+	required int32 optId =     1;   //操作编号
+	required int64 startTime = 2;	//分析的起始时间
+	required int64 endTime =   3;	//分析的结束时间
+}
+
+/* 总配置结构体 */
+message EDT_DATA_ANALYSIS_CFG
+{
+    required string targetGuid = 1;                           //指定分析的任务的GUID(数据库唯一标识符，通过GUID标识该次任务的所有检测信息)
+	optional EVT_MEM_EFFECT_CFG evt_mem_effect_cfg = 2;       //特定空间操作对内存资源的影响
+	optional TSK_MEM_EFFECT_CFG tsk_mem_effect_cfg = 3;		  //任务及各种空间操作对内存资源的影响
+	optional FUNC_TIMEUSE_STATIC func_timeuse_static = 4;	  //特定函数执行用时
+	optional PART_RUNTIME_ANALYSIS_CFG part_runtime_cfg = 5;  //分区运行分析请求
+	optional TASK_RUNTIME_ANALYSIS_CFG task_runtime_cfg = 6;  //任务运行分析请求
+}

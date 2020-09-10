@@ -1,0 +1,44 @@
+syntax = "proto2";
+
+//数据通信交互消息格式
+message UDP_COMMUNCATE_PACKET
+{
+	required int64  timeStamp = 1;            //时间戳信息 用于比对消息是否丢失
+	required int32  msgType = 2;	          //消息类型  1：配置、获取、控制命令  2：回复确认  3：分析配置 4：分析结果 5：icd分析请求 6：icd解析结果
+	required int32  totalLength = 3;          //数据总长
+	required int32  currLength = 4;           //当前包长
+	optional string ipAddr = 5;               //目标机IP地址
+	optional int32  port = 6;                 //目标机端口号
+	optional int32  snNum = 7;                //分包编号
+	optional string  portname = 8;                //portname
+	optional bytes  buffers = 9;              //发送的消息缓存
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

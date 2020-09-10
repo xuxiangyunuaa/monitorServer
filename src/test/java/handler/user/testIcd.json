@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Product set",
+    "type": "array",
+    "items": {
+        "title": "Product",
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string"
+            },
+            "price": {
+                "type": "number",
+                "minimum": 0,
+                "maximum":30,
+                "exclusiveMinimum": true
+            },
+            "tags": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "minLength":10,
+                    "maxLength":1024,
+                    "pattern":"http://.*"
+                },
+                "minItems": 2,
+                "uniqueItems": true
+            },
+            "city":{
+              "type":"string",
+              "enum" : ["bj", "sh", "hk"]
+            }
+        },
+        "required": ["name", "price"]
+    }
+}

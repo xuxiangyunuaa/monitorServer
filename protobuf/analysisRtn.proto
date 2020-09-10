@@ -1,0 +1,127 @@
+﻿// edt message define 
+
+syntax = "proto2";
+
+
+message EVT_MEM_EFFECT_T
+{
+	required int32 objTag = 1;		          //事件对象标识
+	required int64 occurTimestamp = 2;		  //事件发生时间
+	required int32 obj_mem_effect = 3;	      //事件对内存的影响
+}
+/*特定空间操作对内存资源的影响 */
+message EVT_MEM_EFFECT_RTN
+{
+	required int32 optId = 1;		          //操作编号
+	required int32 evtId = 2;	              //事件的ID
+	required int32 mem_effect_sum = 3;	      //事件对内存的总影响
+	repeated EVT_MEM_EFFECT_T ele_effect = 4; //每次事件发生对内存的影响	
+}
+
+message EVT_EFFECT
+{
+	required int32 evtId = 1;		      //事件ID
+	required int32 evt_mem_effect = 2;	      //事件对内存的影响
+}
+message TASK_EFFECT
+{
+	required int32 taskId = 1;		      //任务ID
+	required string taskName = 2;	              //任务名称
+	required int32 task_mem_effect = 3;	      //单个任务中各种空间操作对内存的影响
+	repeated EVT_EFFECT evt_effect = 4;	      //任务中事件对内存的影响
+}
+message PART_EFFECT 
+{
+	required int32 pdId= 1;		              //任务所在分区pd值
+	required string partName = 2;	              //任务所在分区名称
+	required int32 part_mem_effect = 3;	      //分区任务对内存的总影响
+	repeated TASK_EFFECT task_effect= 4;	      //单个任务对内存的影响
+}
+/*任务及各种空间操作对内存资源的影响 */
+message TSK_MEM_EFFECT_RTN
+{
+	required int32 optId = 1;		            //操作编号
+	repeated PART_EFFECT part_effect= 2;   //任务对内存资源的影响
+}
+
+/*特定函数的执行用时 */
+message FUNC_TIMEUSE_STATIC_RTN
+{
+	required int32 optId = 1;		            //操作编号
+	required int32 funcId = 2;		            //函数ID，该ID为用户使用时指定
+	required int64 timeUse = 3;		    		//函数执行用时
+}
+
+//分区内任务运行的时间信息
+message PART_TASK_RUNTIME{
+	required int32  taskID      = 1;     //任务的ID
+	required string taskName    = 2;     //任务的名称 
+	required int64  taskRunTime = 3;	 //任务实际运行的时间
+}
+//分区运行的时间结果信息
+message PART_RUNTIME_DATA{
+	required int32 pd           = 1;          //分区ID
+	required string partName    = 2;          //分区名称 
+	required int64 schedTime    = 3;          //分区配置的运行时间信息 
+	required int64 validTime    = 4;          //有效运行时间
+	required int64 remainTime   = 5;          //分区的时间余量
+	repeated PART_TASK_RUNTIME taskInfo = 6;  //分区中任务的运行信息
+}
+
+//分区运行的时间余量和时间信息分析结果
+message MF_RUNTIME_ANALYSIS_RESULT{
+	required int32 schedId      = 1; 	//运行的sched的ID
+	required int64 timeStamp    = 2;    //该MF起始运行的时间戳
+	repeated PART_RUNTIME_DATA partRunTimeData = 3; //分区运行的时间信息
+}
+
+//分区运行的时间余量和时间信息分析结果
+message PART_RUNTIME_ANALYSIS_RESULT{
+	required int32 optId =     1;                      //操作编号
+	repeated MF_RUNTIME_ANALYSIS_RESULT mfRunTime = 2; //分区运行的时间信息
+}
+
+//任务运行时间信息
+message TASK_RUNTIME_INFO{
+	required int32  taskID   =  1;   //任务的ID
+	required string taskName =  2;   //任务的名称
+	required int32  runTime  =  3;	 //任务运行时间
+}
+
+//一段时间内各个任务的运行时间 分析结果
+message TASK_RUNTIME_ANALYSIS_RESULT{
+	required int32 optId =     1;               //操作编号
+	repeated TASK_RUNTIME_INFO taskRunInfo = 2; //任务运行时间
+}
+
+//各段的大小信息
+message SECTION_SIZE_INFO{
+	required string sectionName = 1; //段的名称
+	required int32  allocSize = 2;   //段分配的大小
+	required int32  actualSize = 3;  //段的实际大小
+}
+
+//某个分区的.sm文件中段的大小信息
+message PART_SECTION_SIZE_INFO{
+	required string partName = 1;   //分区或coreOS的.sm镜像名称
+	repeated SECTION_SIZE_INFO sectionInfo = 2; //.sm文件中段的大小信息
+}
+//各个分区配置段的分配大小和实际消息分析结果
+message PART_SECTION_SIZE_RESULT{
+	required int32 optId = 1;  //操作编号
+	repeated PART_SECTION_SIZE_INFO partSecSizeInfo = 2; //各个.sm文件的各段的大小信息
+}
+
+/* 总配置结构体 */
+message EDT_DATA_ANALYSIS_RTN
+{
+    required string targetGuid = 1;                                         //指定分析的任务的GUID(数据库唯一标识符，通过GUID标识该次任务的所有检测信息)
+	optional EVT_MEM_EFFECT_RTN evt_mem_effect_rtn = 2;                     //特定空间操作对内存资源的影响
+	optional TSK_MEM_EFFECT_RTN tsk_mem_effect_rtn = 3;		                //任务及各种空间操作对内存资源的影响
+	optional FUNC_TIMEUSE_STATIC_RTN func_timeuse_static_rtn = 4;		        //特定函数的执行用时统计
+	optional PART_RUNTIME_ANALYSIS_RESULT part_runtime_analysis_result = 5; //分区运行分析结果
+	optional TASK_RUNTIME_ANALYSIS_RESULT task_runtime_analysis_result = 6; //任务运行分析结果
+	optional PART_SECTION_SIZE_RESULT part_section_size_result = 7;         //分区的各段的大小分析结果
+}
+
+

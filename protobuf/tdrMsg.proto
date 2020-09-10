@@ -1,0 +1,1190 @@
+// 目标机发送到宿主机的消息格式
+
+syntax = "proto2";
+
+
+/////////////////////////////////////////////////////////////////////////////////////////START WeiRuihan
+/* Name和ID对应关系 */
+message EDT_PORTNAME_INFO
+{
+	required int32 evtId = 1;
+	required int64 timeStamp = 2;
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	required int32 pdId2 = 5;		/*分区ID*/
+	required int32 objId = 6;		/*对象ID*/
+	required string objName = 7;    /*接收消息数组*/
+}
+
+
+/* APEX信号量创建上传信息结构体 */
+message EDT_CRE_SEMA_INFO
+{
+	required int32 evtId = 1;
+	required int64 timeStamp = 2;
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+
+	/*-t*/
+	required int32 semaId = 5;         		/*信号量ID*/
+	required int32 currentValue = 6;   		/*当前值*/
+	required int32 maxValue = 7;       		/*最大值*/
+	required int32 queuingDiscipline = 8;  	/*排队方式*/
+
+	/*-a*/
+	required string name = 9;			/*对象名*/
+}
+
+/* APEX_PROCESS创建上传信息结构体 */
+message EDT_PROCCREATE_INFO
+{
+	required int32 evtId = 1;		/* 事件ID */
+	required int64 timeStamp = 2;	/* 时间戳 */
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+
+	/*-t*/
+	required int32 procId = 5;		/* apex进程ID */
+	required int32 pri = 6;			/* apex进程优先级 */
+	required int32 stackSize = 7;	/* apex进程堆栈大小 */
+	required int32 period = 8;		/* apex进程周期 */
+	required int32 deadline = 9;	/* apex进程期限 */
+	required string name = 10;
+}
+
+/******************************* OSAC ***********************************/
+message EDT_OSACSEND_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+
+	/*-t*/
+	required int32 osacId = 5;     	//端口号			仅6.8
+	required int32 portType = 6;	//端口类型，需自定义，仅6.8
+	required int32 timeOut = 7;   	//超时				仅6.8
+	required string name = 8;		//OSAC对象名数组	仅6.8
+	required int32 length = 9;     	//消息长度			仅6.8
+	repeated int32 message = 10;    	//消息数组		仅6.8		
+}
+message EDT_OSACRECV_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+
+	/*-t*/
+	required int32 osacId = 5;     	//端口号			仅6.8
+	required int32 portType = 6;	//端口类型，需自定义，仅6.8
+	required int32 timeOut = 7;   	//超时				仅6.8
+	required string name = 8;		//OSAC对象名数组	仅6.8
+	required int32 length = 9;     	//消息长度			仅6.8
+	repeated int32 message = 10;    	//消息数组		仅6.8		
+}
+/******************************* OSAC ***********************************/
+
+/******************************* msgQSend ***********************************/
+message EDT_MSGQSEND_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+
+	/*-t*/
+	required int32 msgQId = 5;    /*消息队列ID*/
+	required int32 objType = 6; 	/*对象类型*/				
+	required int32 timeout = 7;   /*发送超时时间*/
+	required int32 priority = 8;  /*发送优先级*/
+	required int32 sendLen = 9;   /*发送长度*/
+	repeated int32 msgQBuf =10;   /*发送消息数组*/
+}
+/******************************* msgQSend ***********************************/
+
+/******************************* msgQReceive ***********************************/
+message EDT_MSGQRECV_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+
+	/* -t */
+	required int32 msgQId = 5;    	/*消息队列ID*/
+	required int32 objType = 6; 	/*对象类型*/
+	required int32 timeout = 7;     /*接收超时时间*/
+	required int32 recvMaxLen = 8;  /*接收最大长度*/
+	repeated int32 msgQBuf = 9;    /*接收消息数组*/
+}
+/******************************* msgQReceive ***********************************/
+
+/******************************* CREATE_BLACKBOARD ***********************************/
+message  EDT_CRE_BLACKBOARD_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+
+	/*-t*/
+	required int32 blackBoardId = 5; /*blackboard ID*/		//仅653
+	required int32 msgSize = 6;		 /*blackboard 大小*/	//仅653
+
+	/*-a*/
+	required string name = 8; /*对象名*/					//仅653
+}
+/******************************* CREATE_BLACKBOARD ***********************************/
+
+/******************************* READ_BLACKBOARD ***********************************/
+message  EDT_READ_BLACKBOARD_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+
+	/*-t*/
+	required int32 balckBoardId = 5; /*blackboard ID*/		//仅653
+	required int32 state = 6;        /*blackboard 状态*/	//仅653
+	required int32 timeOut = 7;      /*读取等待超时*/		//仅653
+
+	/*-a*/
+	required int32 objType = 8; /*对象类型*/				//仅653
+	required string name = 9; /*对象名*/					//仅653
+	required int32 msgLength = 10; /*消息长度*/				//仅653
+	repeated int32 message = 11;  /*消息数组*/				//仅653
+}
+/******************************* READ_BLACKBOARD ***********************************/
+
+/******************************* CLEAR_BLACKBOAED ***********************************/
+message  EDT_CLR_BLACKBOARD_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+
+	/*-t*/
+	required int32 balckBoardId = 5; /*blackboard ID*/		//仅653
+	required int32 state = 6;        /*blackboard 状态*/	//仅653
+
+	/*-a*/
+	required int32 objType = 7; /*对象类型*/				//仅653
+	required string name = 8; /*对象名*/					//仅653
+}
+/******************************* CLEAR_BLACKBOAED ***********************************/
+
+/******************************* DISPLAY_BLACKBOARD ***********************************/
+message  EDT_DIS_BLACKBOARD_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 balckBoardId = 5; 	/*blackboard ID*/	//仅653
+	required int32 displayLength = 6; 	/*显示长度*/		//仅653
+	
+	/*-a*/
+	required int32 objType = 7; /*对象类型*/				//仅653
+	required string name = 8; /*对象名*/					//仅653
+	required int32 msgLength = 9; /*消息长度*/				//仅653
+	repeated int32 message = 10;  /*消息数组*/				//仅653
+}
+/******************************* DISPLAY_BLACKBOARD ***********************************/
+
+/******************************* CREATE_BUFFER ***********************************/
+message  EDT_CRE_BUFFER_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 bufferId = 5;    		/*buffer ID*/		//仅653
+	required int32 maxMsgSize = 6;          /*消息最大长度*/	 //仅653
+	required int32 maxMsgNum = 7;           /*最大消息数量*/	 //仅653
+	required int32 queuingDiscipling = 8;	/*排队方式*/		 //仅653
+	
+	/*-a*/
+	required string name = 9; /*对象名*/						//仅653
+}
+/******************************* CREATE_BUFFER ***********************************/
+
+/******************************* SEND_BUFFER ***********************************/
+message  EDT_SEND_BUFFER_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 bufferId = 5;   /*buffer ID*/		//仅653
+	required int32 timeOut = 6;    /*发送超时*/			//仅653
+	required int32 length = 7;     /*发送长度*/			//仅653
+	
+	/*-a*/
+	required int32 objType = 8; /*对象类型*/			//仅653
+	required string name = 9; /*对象名*/				//仅653
+}
+/******************************* SEND_BUFFER ***********************************/
+
+/******************************* RECEIVE_BUFFER ***********************************/
+message  EDT_RECV_BUFFER_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 bufferId = 5;   /*buffer ID*/	//仅653
+	required int32 timeOut = 6;    /*接收超时*/		 //仅653
+	
+	/*-a*/
+	required int32 objType = 7; /*对象类型*/		//仅653
+	required string name = 8; /*对象名*/			//仅653
+}
+/******************************* RECEIVE_BUFFER ***********************************/
+
+/******************************* CREATE_EVENT ***********************************/
+message  EDT_CRE_EVENT_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 eventId = 5;   /*event ID*/		//仅653
+	required int32 state = 6;     /*event 状态*/	//仅653
+	
+	/*-a*/
+	required string name = 7; /*对象名*/			//仅653
+}
+/******************************* CREATE_EVENT ***********************************/
+
+/******************************* SET_EVENT ***********************************/
+message  EDT_SET_EVENT_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 eventId = 5; /*event ID*/		//仅653
+	required int32 state = 6;   /*event 状态*/		//仅653
+	
+	/*-a*/
+	required int32 objType = 7; /*对象类型*/		//仅653
+	required string name = 8; /*对象名*/			//仅653
+}
+/******************************* SET_EVENT ***********************************/
+
+/******************************* RESET_EVENT ***********************************/
+message  EDT_RESET_EVENT_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 eventId = 5;  /*event ID*/		//仅653
+	required int32 state = 6;    /*event 状态*/		//仅653
+	
+	/*-a*/
+	required int32 objType = 7; /*对象类型*/		//仅653
+	required string name = 8; /*对象名*/			//仅653
+}
+/******************************* RESET_EVENT ***********************************/
+
+/******************************* WAIT_EVENT ***********************************/
+message  EDT_WAIT_EVENT_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 eventId = 5;  /*event ID*/		//仅653
+	required int32 state = 6;    /*event 状态*/		//仅653
+	
+	/*-a*/
+	required int32 objType = 7; /*对象类型*/		//仅653
+	required string name = 8; /*对象名*/			//仅653
+}
+/******************************* WAIT_EVENT ***********************************/
+
+/******************************* CREATE_QUEUING_PORT ***********************************/
+message  EDT_CRE_QUEUING_PORT_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 qPortId = 5;  			/*端口 ID*/			//仅653
+	required int32 maxMsgSize = 6;         	/*消息最大长度*/	//仅653
+	required int32 maxMsgNum = 7;          	/*最大消息数量*/	//仅653
+	required int32 queuingDiscipline = 8;  	/*排队方式*/		//仅653
+	required int32 portDirection = 9;      	/*端口方向*/		//仅653
+	
+	/*-a*/
+	required string name = 10; /*对象名*/						//仅653
+};
+/******************************* CREATE_QUEUING_PORT ***********************************/
+
+/******************************* SEND_QUEUING_MESSAGE ***********************************/
+message  EDT_SEND_QUEUING_MSG_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 qPortId = 5;  	/*端口 ID*/			//仅653
+	required int32 timeOut = 6; 	/*超时*/			//仅653
+	required int32 length  = 7;  	/*消息长度*/		//仅653
+	repeated int32 message = 8;		/*消息数组*/		//仅653
+	
+	/*-a*/
+	required int32 objType = 9; /*对象类型*/				//仅653
+	required string name = 10; /*对象名*/				//仅653
+}
+/******************************* SEND_QUEUING_MESSAGE ***********************************/
+
+/******************************* RECEIVE_QUEUING_MESSAGE ***********************************/
+message  EDT_RECV_QUEUING_MSG_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 qPortId = 5; 	/*端口 ID*/			//仅653
+	required int32 timeOut = 6;    /*超时*/			//仅653
+	required int32 maxMsgSize = 7; 	/*最大消息长度*/	//仅653
+	repeated int32 message = 8;		/*消息数组*/		//仅653
+	
+	/*-a*/
+	required int32 objType = 9; /*对象类型*/				//仅653
+	required string name = 10; /*对象名*/				//仅653
+}
+/******************************* RECEIVE_QUEUING_MESSAGE ***********************************/
+
+/******************************* CREATE_SAMPLING_PORT ***********************************/
+message  EDT_CRE_SAMPLING_PORT_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 sPortId = 5;			/*端口ID*/			//仅653
+	required int32 refreshPeriod = 6;   /*刷新周期*/		//仅653
+	required int32 maxMsgSize = 7;      /*最大消息长度*/	//仅653
+	required int32 portDirection = 8;   /*端口方向*/		//仅653
+	
+	/*-a*/
+	required string name = 9; /*对象名*/					//仅653
+}
+/******************************* CREATE_SAMPLING_PORT ***********************************/
+
+/******************************* WRITE_SAMPLING_MESSAGE ***********************************/
+message  EDT_WRITE_SAMPLING_MSG_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 sPortId = 5;		/*端口ID*/			//仅653
+	required int32 length = 6;      /*消息长度*/		//仅653
+	repeated int32 message = 7;		/*消息数组*/		//仅653
+	
+	/*-a*/
+	required int32 objType = 8; /*对象类型*/				//仅653
+	required string name = 9; /*对象名*/				//仅653
+}
+/******************************* WRITE_SAMPLING_MESSAGE ***********************************/
+
+
+/******************************* READ_SAMPLING_MESSAGE ***********************************/
+message  EDT_READ_SAMPLING_MSG_INFO
+{
+	required int32 evtId = 1;		/*事件ID*/
+	required int64 timeStamp = 2;	/*时间戳信息*/
+	required int32 pdId = 3;		/*分区ID*/
+	required int32 portId = 4;		/*对象ID*/
+	
+	/*-t*/
+	required int32 sPortId = 5;	/*端口ID*/			//仅653
+	
+	/*-a*/
+	required int32 objType = 6; /*对象类型*/		//仅653
+	required string name = 7; /*对象名*/			//仅653
+}
+/******************************* READ_SAMPLING_MESSAGE ***********************************/
+
+/////////////////////////////////////////////////////////////////////////////////////////////End WeiRuihan
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////Start LuYayong
+
+//获取的任务名称和任务ID，针对创建的任务时调取
+message EDT_TASKNAME_INFO
+{
+	required int32 state    = 1;   //任务的状态
+	required int32 priority = 2;   //任务的优先级
+	required int32 lockCnt  = 3;   
+	required int32 tid      = 4;   //任务的ID
+	required string name    = 5;   //任务的名称
+}
+
+//获取任务的名称
+message EDT_EVENT_TASKNAME
+{
+	required int32 evtId = 1;                    //事件ID
+	required int64 timeStamp = 2;	             //时间戳信息
+	required int32 pdId = 3;                     //分区ID 653专用
+	required int32 portId = 4;                   //端口ID 
+	required EDT_TASKNAME_INFO tasknameInfo = 5; //任务名称事件的获取信息
+}
+//系统中的任务列表
+message EDT_EVENT_TASKTABLE
+{
+	required int32 evtId = 1;                    //事件ID
+	required int64 timeStamp = 2;	             //时间戳信息
+	required int32 pdId = 3;                     //分区ID 653专用
+	required int32 portId = 4;                   //端口ID 
+	repeated EDT_TASKNAME_INFO sysTaskTable = 5; //系统中的任务表
+}
+
+//任务切换信息
+message EDT_EVENT_TASKSWINFO
+{
+	required int32 evtId     = 1;   //事件ID
+	required int64 timeStamp = 2;	//时间戳信息
+	required int32 pdId      = 3;   //分区ID 653专用
+	required int32 portId    = 4;   //端口ID 
+	required int32 tOldId    = 5;   //切换前运行任务的ID
+	required int32 tNewId    = 6;   //切换后运行任务的ID
+}
+
+//调度表中分区调度信息
+message SCHED_PART_INFO{
+	required int32  partId   = 1;   //分区的ID
+	required string partName = 2;   //分区名称
+	required int32  duration = 3;   //分区的周期 单位us
+}
+	
+//调度表信息
+message EDT_EVENT_MFINFO
+{
+	required int32 schedId = 1;            //调度表的ID
+	repeated SCHED_PART_INFO partInfo = 2; //调度表中的分区配置信息
+}
+
+//调度表事件信息获取
+message EDT_EVENT_MFTABLE
+{
+	required int32 evtId     = 1;           //事件ID
+	required int64 timeStamp = 2;	        //时间戳信息
+	required int32 pdId      = 3;           //分区ID 653专用
+	required int32 portId    = 4;           //端口ID 
+	repeated EDT_EVENT_MFINFO mfTable = 5;  //系统中的调度表
+}
+
+//分区切换记录信息
+message EDT_EVENT_SWPARTATION
+{
+	required int32 evtId      = 1;   //事件ID
+	required int64 timeStamp  = 2;   //时间戳信息
+	required int32 pdId       = 3;   //分区ID 653专用
+	required int32 portId     = 4;   //端口ID 
+	required int32 prevPartId = 5;   //切换前的分区的ID
+	required int32 currPartId = 6;   //切换后的分区的ID
+}
+
+//分区内任务切换执行的记录信息结构
+message EDT_EXIT_DISPATCH
+{
+	required int32 evtId      = 1;  //事件ID
+	required int64 timeStamp  = 2;  //时间戳信息
+	required int32 pdId       = 3;  //分区ID 653专用
+	required int32 portId     = 4;  //端口ID
+	required int32 taskId     = 5;  //运行的任务ID
+	required int32 priority   = 6;  //运行任务的优先升级
+}
+//分区的 PERIODIC_WAIT 事件记录
+message EDT_PERIODIC_WAIT
+{
+	required int32 evtId      = 1;  //事件ID
+	required int64 timeStamp  = 2;  //时间戳信息
+	required int32 pdId       = 3;  //分区ID 653专用
+	required int32 portId     = 4;  //端口ID
+	required int32 procId     = 5;  //任务的procId
+}
+
+//MF切换事件记录 只在653系统中使用
+message EDT_EVENT_MFSW_INFO
+{
+	required int32 evtId     = 1;   //事件ID
+	required int64 timeStamp = 2;   //时间戳信息
+	required int32 pdId      = 3;   //分区ID 653专用
+	required int32 portId    = 4;   //端口ID 
+	required int32 schedId   = 5;   //当前使用的系统调度表的编号
+}
+
+//分区信息列表
+message PDLIST_INFO_LIST{
+	required int32  pdId   = 1; //分区ID
+	required string pdName = 2; //分区的名称
+}
+
+//系统中的domain ID和名称列表(653包含coreOS和 pos)
+message EDT_EVENT_PDLIST_INFO{
+	required int32  evtId            = 1; //事件ID
+	required int64  timeStamp        = 2; //时间戳信息
+	required int32  pdId             = 3; //分区ID 653专用
+	required int32  portId           = 4; //端口ID 
+	repeated PDLIST_INFO_LIST pdList = 5; //分区信息表 (包含coreOS和pos)
+}
+//进入分区IDLE  VX653
+message EDT_PARTITION_IDLE{
+	required int32  evtId            = 1; //事件ID
+	required int64  timeStamp        = 2; //时间戳信息
+	required int32  pdId             = 3; //分区ID 653专用
+	required int32  portId           = 4; //端口ID 
+}
+
+//退出分区IDLE  VX653
+message EDT_PARTITION_EXITIDLE{
+	required int32  evtId            = 1; //事件ID
+	required int64  timeStamp        = 2; //时间戳信息
+	required int32  pdId             = 3; //分区ID 653专用
+	required int32  portId           = 4; //端口ID 
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////End LuYayong
+
+/////////////////////////////////////////////////////////////////////////////////////////////Start wsm
+//任务创建
+message EDT_TASKSPAWN_T
+{
+	required int32 taskId = 1;          								  //任务ID
+	required int32 priority = 2;          								//任务优先级
+	required int32 stackSize = 3;        							    //任务堆栈大小
+	required int32 entryPoint = 4;         								//任务入口函数地址
+	required int32 options = 5;                           //任务创建时的选项
+	required int32 objOwnerId = 6;                           //任务归属的obj的ID,653内核专用
+}
+message EDT_TASKSPAWN_INFO
+{
+	required int32 evtId = 1;          							//事件类型
+	required int64 timeStamp = 2;          						//事件发生的时间点
+	required int32 pdId = 3;		                           /*分区ID 653专用*/
+	required int32 portId = 4;		                           /*portID*/
+	required EDT_TASKSPAWN_T tskSpawn = 5;        			  //任务创建特有信息
+}
+//任务删除
+message EDT_TASKDESTROY_T
+{
+	required int32 taskId = 1;                             //任务ID
+	required int32 taskClassId = 2;                        //class类型 6.8和分区专用
+	required int32 taskId_1 = 3;                           //任务ID 6.8和分区专用
+	required int32 safeCnt = 4;                            //安全计数值
+}
+message EDT_TASKDESTROY_INFO
+{
+	required int32 evtId = 1;                       //事件类型
+	required int64 timeStamp = 2;                     //事件发生的时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_TASKDESTROY_T tskDestroy = 5;           //任务删除特有信息
+}
+//IO创建
+message EDT_IOCREATE_OPEN_T
+{
+	required int32 objId = 1;                              //内核对象ID
+	required int32 classId = 2;                            //class类型
+	required int32 nameLen = 3;                            //IO名称长度
+	required string name = 4;                              //IO名称
+	required int32 fd = 5;                                 //IO句柄
+	required int32 flag = 6;                               //IO创建标志位，O_RDONLY,O_WDWR,OCRET
+}
+message EDT_IOCREATE_OPEN_INFO
+{
+	required int32 evtId = 1;                       //事件类型
+	required int64 timeStamp = 2;                     //事件发生的时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_IOCREATE_OPEN_T ioCOpen = 5;       //IO创建特有信息
+}
+//IO关闭
+message EDT_IODELETE_T
+{
+	required int32 classId = 1;                            //class类别
+	required int32 length = 2;                             //设备名称长度
+	required string name = 3;                              //设备名称
+}
+////ioDelete
+message EDT_IODELETE_INFO
+{
+	required int32 evtId = 1;                      //事件类型
+	required int64 timeStamp = 2;                    //事件发生时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_IODELETE_T ioDelete = 5;               //IODELETE特有信息
+}
+message EDT_IOCLOSE_T
+{
+	required int32 objId = 1;             				        //对象ID
+	required int32 classId = 2;                           //class类型 
+	required int32 fd = 3;                                //IO设备句柄
+}
+////ioClose
+message EDT_IOCLOSE_INFO
+{
+	required int32 evtId = 1;             				  //事件类型
+	required int64 timeStamp = 2;                    //事件发生时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_IOCLOSE_T ioClose = 5;                 //IOCLOSE特有信息
+}
+//信号量创建
+message EDT_SEMBCREATE_T
+{
+	required int32 semId = 1;                             //信号量ID
+	required int32 classId = 2;                           //class类型 6.8或分区专用
+	required int32 semId_1 = 3;                           //信号量ID 6.8或分区专用
+	required int32 options = 4;                           //信号量选项
+	required int32 owner = 5;                          //信号量状态
+	required int32 objOwnerId = 6;                        //对象所有者 653专用
+}
+////二值信号量创建
+message EDT_SEMBCREATE_INFO
+{
+	required int32 evtId = 1;                      //事件类型
+	required int64 timeStamp = 2;                    //事件发生时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_SEMBCREATE_T semBCreat = 5;            //SEMBCREATE特有信息
+}
+message EDT_SEMCCREATE_T
+{
+	required int32 semId = 1;                             //信号量ID
+	required int32 classId = 2;                           //class类型 6.8或分区专用
+	required int32 semId_1 = 3;                           //信号量ID 6.8或分区专用
+	required int32 options = 4;                           //信号量选项
+	required int32 initCount = 5;                         //信号量初始值
+	required int32 objOwnerId = 6;                        //对象所有者 653专用
+}
+////计数信号量创建
+message EDT_SEMCCREATE_INFO
+{
+	required int32 evtId = 1;                      //事件类型
+	required int64 timeStamp = 2;                    //事件发生时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_SEMCCREATE_T semCCreat = 5;            //SEMCCREATE特有信息
+}
+message EDT_SEMMCREATE_T
+{
+	required int32 semId = 1;                             //信号量ID
+	required int32 classId = 2;                           //class类型 6.8或分区专用
+	required int32 semId_1 = 3;                           //信号量ID 6.8或分区专用
+	required int32 options = 4;                           //信号量选项
+	required int32 owner = 5;                          //信号量所有者
+	required int32 objOwnerId = 6;                        //对象所有者 653专用
+}
+////互斥信号量创建
+message EDT_SEMMCREATE_INFO
+{
+	required int32 evtId = 1;                      //事件类型
+	required int64 timeStamp = 2;                  //事件发生时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_SEMMCREATE_T semMCreat = 5;            //SEMMCREATE特有信息
+}
+message EDT_SEMDELETE_T
+{
+	required int32 semId = 1;                             //信号量ID
+	required int32 classId = 2;                           //class类型 6.8或分区专用
+	required int32 semId_1 = 3;                           //信号量ID 
+	required int32 owner = 4;                             //信号量选项 
+	required int32 recurse = 5;                           //信号量所有者
+	required int32 qHeadAddr = 6;                         //阻塞队列首地址
+}
+//信号量删除
+message EDT_SEMDELETE_INFO
+{
+	required int32 evtId = 1;                      //事件类型
+	required int64 timeStamp = 2;                    //事件发生时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_SEMDELETE_T semDelete = 5;             //SEMDELETE特有信息
+}
+message EDT_WDCREATE_T
+{
+	required int32 wdId = 1;                              //看门狗ID
+	required int32 classId = 2;                           //class类型 6.8或分区专用
+	required int32 wdId_1 = 3;                            //看门狗ID 6.8或分区专用
+	required int32 objOwnerId = 4;                        //对象所有者 653专用
+}
+//看门狗定时器创建
+message EDT_WDCREATE_INFO
+{
+	required int32 evtId = 1;                      //事件类型
+	required int64 timeStamp = 2;                    //事件发生时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_WDCREATE_T wdCreat = 5;                //WDCREATE特有信息
+}
+message EDT_WDDELETE_T
+{
+	required int32 wdId = 1;                              //看门狗ID
+	required int32 classId = 2;                           //class类型 6.8或分区专用
+	required int32 wdId_1 = 3;                            //看门狗ID 
+}
+//看门狗定时器删除
+message EDT_WDDELETE_INFO
+{
+	required int32 evtId = 1;             //事件类型
+	required int64 timeStamp = 2;         //事件发生时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_WDDELETE_T wdDelete = 5;               //WDDELETE特有信息
+}
+message EDT_MSGQCREATE_T
+{
+	required int32 msgQId = 1;                             //消息队列ID
+	required int32 classId = 2;                            //class类型 6.8或分区专用
+	required int32 msgQId_1 = 3;                           //消息队列ID 6.8或分区专用
+	required int32 maxMsgs = 4;                            //消息队列最大消息数量
+	required int32 maxMsgLen = 5;                          //消息队列最大消息消息长度
+	required int32 options = 6;                            //消息队列创建时选项
+	required int32 objOwnerId = 7;                         //对象所有者 653专用
+}
+//消息队列创建
+message EDT_MSGQCREATE_INFO
+{
+	required int32 evtId = 1;                       //事件类型
+	required int64 timeStamp = 2;                     //事件发生时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_MSGQCREATE_T msgQCreat = 5;             //MSGQCREATE特有信息
+}
+message EDT_MSGQDELETE_T
+{
+	required int32 msgQId = 1;                             //消息队列ID
+	required int32 classId = 2;                            //class类型 6.8或分区专用
+	required int32 msgQId_1 = 3;                           //消息队列ID
+}
+//消息队列删除
+message EDT_MSGQDELETE_INFO
+{
+	required int32 evtId = 1;                       //事件类型
+	required int64 timeStamp = 2;                     //事件发生时间点
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required EDT_MSGQDELETE_T msgQDelete = 5;            //MSGQDELETE特有信息
+}
+//特定函数执行用时统计
+message EDT_FUNC_TIME_USE_INFO
+{
+	required int32 evtId = 1;        //事件ID
+	required int64 timeStamp = 2;	   //时间戳信息
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required int32 evtflag = 5;      //事件标志，0表示是开始事件，1表示是结束事件
+	required int64 tmpCnt = 6;       //当前记录对应的count值
+	required int32 funcId = 7;       //特定函数标识
+}
+/* 同步信息上传结构体 */
+message EDT_SYNTIME_INFO
+{
+	required int32 evtId = 1;		      /*事件ID*/
+	required int64 timeStamp = 2;	      /*时间戳信息*/
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required int64 localTime = 5;	      /*计算机本地时间*/
+	required int32 vxFlag= 6;	          /*操作系统标识 0表示 vx6.8/1表示 vx6.9/2表示 vx653 2.2/3表示 vx653 2.4*/
+}
+
+//POSIX_TIMER创建
+message EDT_TIMERCREAT_INFO
+{
+	required int32 evtId = 1;		        /*事件ID*/
+	required int64 timeStamp = 2;	      /*时间戳信息*/
+	required int32 pdId = 3;		        /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required int32 clock_id = 5;	      /*时钟类型*/
+	required int32 handle= 6;	          /*处理函数地址*/
+	required int32 timer_id= 7;	        /*定时器ID*/
+}
+//POSIX_TIMER删除
+message EDT_TIMERDELETE_INFO
+{
+	required int32 evtId = 1;		      /*事件ID*/
+	required int64 timeStamp = 2;	      /*时间戳信息*/
+	required int32 pdId = 3;		      /*分区ID 653专用*/
+	required int32 portId = 4;		      /*portID*/
+	required int32 timer_id= 5;	          /*定时器ID*/
+}
+//命令执行结果
+message EDT_CMDRST_INFO
+{
+	required int32 evtId = 1;		       /*事件ID*/
+	required int64 timeStamp = 2;	       /*时间戳信息*/
+	required int32 errnoID= 3;	           /*命令执行结果*/
+}
+/////////////////////////////////////////////////////////////////////////////////////////////End wsm
+
+/////////////////////////////////////////////////////////////////////////////////////////////Start tjw
+//memPartCreate函数采集——tjw
+
+message EDT_MEMPARTCREATE_T{
+	required int32  partId = 1;															//内存分区ID
+	required int32  objOwnerId = 2;													//pointer to object's owner (653_coreOS)
+	required int32  poolSize   = 3;													//内存分区的内存池大小
+}
+
+message EDT_MEMPARTCREATE_INFO{
+	required int32 evtId = 1;																//事件类型
+	required int64 timeStamp = 2;														//事件发生的时间点
+	required int32 pdId = 3;
+	required int32 portId = 4;
+	required EDT_MEMPARTCREATE_T memPartCreateInfo = 5; 		//memPartCreate采集特有信息
+}
+
+
+//malloc函数采集——tjw
+
+message EDT_MEMALLOC_T{
+	required int32  partId = 1;															//内存分区ID
+	required int32  alignAddr = 2;   												//内存分配的起始地址
+	required int32  chunkSize = 3;  												//实际分配的内存大小
+	required int32  nBytes = 4;      												//需要分配的内存大小	
+}
+
+message EDT_MEMALLOC_INFO{
+	required int32 evtId = 1;																//事件类型
+	required int64 timeStamp = 2;														//事件发生的时间点
+	required int32 pdId = 3;
+	required int32 portId = 4;
+	required EDT_MEMALLOC_T memallocInfo = 5; 							//malloc采集特有信息
+}
+
+
+//free函数采集——tjw
+
+message EDT_MEMFREE_T{
+	required int32  partId = 1;															//内存分区ID
+	required int32  pBlock = 2;   													//释放的内存块地址
+	required int32  Size = 3;  															//实际释放的内存大小
+}
+
+message EDT_MEMFREE_INFO{
+	required int32 evtId = 1;																//事件类型
+	required int64 timeStamp = 2;														//事件发生的时间点
+	required int32 pdId = 3;
+	required int32 portId = 4;
+	required EDT_MEMFREE_T memFreeInfo = 5; 								//free采集特有信息
+}
+
+
+//内存信息获取——tjw
+
+message EDT_MEMINFOGET_T{
+	required int32 freeBytes = 1;   												//空闲内存字节数
+	required int32 freeBlocks = 2; 													//空闲内存块数
+	required int32 freeAvgBlock = 3;												//空闲内存块平均字节数
+	required int32 freeMaxBlock = 4;												//空闲内存块最大字节数
+	required int32 allocBytes = 5;   												//已分配内存字节数
+	required int32 allocBlocks = 6; 												//已分配内存块数
+	required int32 allocAvgBlock = 7;												//已分配内存块平均字节数
+	required int32 allocMaxBytes = 8;												//已分配最大字节数
+	required int32 internalBytes = 9;   										//内部使用内存字节数
+	required int32 internalBlocks = 10; 										//内部使用内存块数
+	required int32 internalAvgBlock = 11;										//内部使用内存块平均字节数
+	required int32 cumBytesAllocated	= 12;									//总计分配的字节数
+	required int32 cumBlocksAllocated = 13;									//总计分配的内存块
+	required int32 cumAvgBlock = 14;												//总计分配的内存块平均字节数
+}
+
+message EDT_MEMINFOGET_INFO{
+	required int32 evtId = 1;																//事件类型
+	required int64 timeStamp = 2;														//事件发生的时间点
+	required int32 pdId = 3;
+	required int32 portId = 4;
+	required EDT_MEMINFOGET_T memInfoGet = 5; 							//内存信息获取特有信息
+}
+
+
+//任务堆栈获取——tjw
+
+message EDT_TASKSTACK_T{
+	required string taskname = 1;   												//任务名
+	required int32 entry = 2;																//任务入口函数地址
+	required int32 taskID = 3;															//任务ID
+	required int32 stackSize = 4;														//该任务堆栈大小
+	required int32 sp = 5;																	//该任务堆栈指针（SP）当前位置
+	required int32 stackBase = 6;														//任务使用的堆栈起始地址
+	required int32 stackEnd = 7;														//任务使用的堆栈末尾地址
+	required int32 highSize = 8;														//任务使用过的最大的堆栈空间
+	required int32 margin = 9;															//堆栈剩余可用空间大小
+}
+
+message EDT_TASKSTACK_INFO{
+	required int32 evtId = 1;																//事件类型
+	required int64 timeStamp = 2;														//事件发生的时间点
+	required int32 pdId = 3;
+	required int32 portId = 4;
+	required EDT_TASKSTACK_T taskInfoGet = 5; 							//任务堆栈获取特有信息
+}
+
+
+//进入中断事件采集——tjw
+
+message EDT_INTENTER_T{
+	required int32  interruptId = 1;												//中断向量号
+}
+
+message EDT_INTENTER_INFO{
+	required int32 evtId = 1;																//事件类型
+	required int64 timeStamp = 2;														//事件发生的时间点
+	required int32 pdId = 3;
+	required int32 portId = 4;
+	required EDT_INTENTER_T edtIntEnterInfo = 5; 						//中断事件采集特有信息
+}
+
+
+//退出中断采集（两处不同的中断退出的位置，收集退出的信息位置一致）——tjw
+message EDT_INTEXIT_INFO
+{
+	required int32 evtId = 1;					//事件ID
+	required int64 timeStamp = 2;		//时间戳信息
+	required int32 pdId = 3;
+	required int32 portId = 4;
+}
+
+//虚中断事件采集——tjw
+
+message EDT_PSEUDOINT_T{
+	required int32  partitionNumber = 1;						//分区Id
+	required int32  eventType = 2;									//虚中断事件类型
+	required int32  arg1 = 3;												//虚中断传递参数1
+	required int32  arg2 = 4;												//虚中断传递参数2
+	required int32  arg3 = 5;												//虚中断传递参数3
+	required int32  arg4 = 6;												//虚中断传递参数4
+}
+
+message EDT_PSEUDOINT_INFO{
+	required int32 evtId = 1;																//事件类型
+	required int64 timeStamp = 2;														//事件发生的时间点
+	required int32 pdId = 3;
+	required int32 portId = 4;
+	required EDT_PSEUDOINT_T edtPseudoIntInfo = 5; 					//虚中断事件采集特有信息
+}
+
+//ed&r事件注入采集——tjw
+message EDT_EDRINJECT_T{
+	required int32  kind = 1;					//ed&r事件类型
+	required string fileName = 2;			//ed&r事件注入源文件
+	required int32	lineNumber = 3;		//ed&r事件注入源文件行数
+	required int32 	address = 4;			//ed&r事件注入地址
+	required string message = 5;			//ed&r事件附加信息
+}
+
+message EDT_EDRINJECT_INFO
+{
+	required int32 evtId = 1;										//事件ID
+	required int64 timeStamp = 2;							//时间戳信息
+	required int32 pdId = 3;
+	required int32 portId = 4;
+	required EDT_EDRINJECT_T edrInjectInfo = 5;	//edr事件注入特有信息
+}
+
+
+
+//异常事件采集——tjw
+message EDT_EXCINFO_T{
+	required int32  exception = 1;												//异常向量号
+}
+
+message EDT_EXC_INFO{
+	required int32 evtId = 1;																//事件类型
+	required int64 timeStamp = 2;														//事件发生的时间点
+	required int32 pdId = 3;
+	required int32 portId = 4;
+	required EDT_EXCINFO_T edtExcInfo = 5; 									//异常事件采集特有信息
+}
+
+
+
+//ED&R头部信息获取——tjw
+message EDT_EDR_ERR_LOG_HEADER
+{
+	required int32			endianness  	= 1;       // endianness identifier         
+	required int32			magic					= 2;       // log identifier 	            
+	required int32			version				= 3;       // log version number           
+	required int32			payloadSize		= 4;       // payload size (in bytes)       
+	required int32			nodeSize			= 5;	   	 // node size (in bytes)     
+	required int32			size					= 6;       // log size (in bytes)      
+	required int32      nPages				= 7;		   // log size (in pages)           
+	required int32			nHeaderPages	= 8;	   	 // number of pages for header    
+	required int32      pageProtect		= 9;	   	 // page protection counts        
+	required int32			osVersion			= 10;      // version of OS/ED&R           
+	required int32			cpuType				= 11;      // WindRiver CPU type code       
+	repeated int32			reserved			= 12;      // reserved for future use       
+}
+
+message EDT_EDR_ERR_LOG_NODE_LIST
+{
+	required int32			maxNodeCount 	= 1;      // 最大日志条目数  
+	required int32			oldestNode	 	= 2;      // 最老的日志条目号  
+	required int32			nextNode			= 3;      // 下一条空闲日志条目号   
+	required int32			nodeCount			= 4;      // 当前日志条目数
+	repeated int32			reserved			= 5;      // reserved for future use	    
+	required int32    	pNodeFirst		= 6;     	// 第一条日志地址  
+}
+
+message EDT_EDR_ERR_LOG
+{
+	required EDT_EDR_ERR_LOG_HEADER	header				= 1;	// log header		   
+	required int32 					checksum							= 2;  // checksum for the header	    
+	required int32 					modCount							= 3;  // co-modification count	    
+	required int32 					genCount							= 4;  // generation count of error log 
+	required int32 					bootCount							= 5;  // boot count indicator	    
+	required int32          missedErrors					= 6;  // missed error count	    
+	repeated int32					reserved							= 7;  // reserved for future use	    
+	required EDT_EDR_ERR_LOG_NODE_LIST nodeList		= 8;  // nodes; must be last member    
+}
+
+message EDT_EDR_HEAD_INFO
+{
+	required int32 						evtId     = 1;   	//事件ID
+	required int64						timeStamp = 2;		//采集时间戳
+	required int32 						pdId			= 3;
+	required int32 						portId 		= 4;
+	required EDT_EDR_ERR_LOG	headInfo	= 5;		//ed&r头部信息
+}
+
+
+//HM事件注入采集——tjw
+message EDT_HMINJECT_T{
+	required int32 	code = 1;								//primary code for event
+	required int32 	partNumber = 2;					//分区Id
+	required int32	evtTag = 3;							//event identifier
+	required int32 	sysStatus = 4;					//system status at injection
+	required int32 	subCode = 5;						//sub-code (if applicable)
+	required int32 	addr = 6;								//failed address information
+	required int32 	taskId = 7;							//任务Id
+}
+
+message EDT_HMINJECT_INFO
+{
+	required int32 evtId = 1;									//事件ID
+	required int64 timeStamp = 2;							//时间戳信息
+	required int32 pdId = 3;
+	required int32 portId = 4;
+	required EDT_HMINJECT_T hmInjectInfo = 5;	//HM事件注入特有信息
+}
+
+
+//HM日志信息获取——tjw
+message EDT_HMLOGINFO_T{
+	required int32 	start = 1;					//实际的采集起始条目数
+	required int32 	count = 2;					//实际采集的条目数
+	required int32 	evtTag = 3;					//event identifier 
+	required int32 	partNumber = 4;			//partition number from which the event was injected
+	required int32	level = 5;					//level of dispatch 
+	required int64 	timeStamp = 6;			//time of injections (in ticks)
+	required int32 	sysStatus = 7;			//system status at injection
+	required int32 	historicalCode = 8;	//RESERVED.  Used when the subCode is shifted out 
+	required int32 	code = 9;						//primary code for event 
+	required int32 	subCode = 10;				//sub-code (if applicable)
+	required int32 	addInfo = 11;				//additional information 
+	required int32	addr = 12;					//failed address information
+	required int32 	taskId = 13;				//task ID
+	required string taskName = 14;			//task where the alarm was injected 
+	required int32 	msgLen = 15;				//length (in bytes) of event message 
+	required string msg = 16;						//event message 
+
+}
+
+message EDT_HM_LOG_INFO
+{
+	required int32 						evtId     = 1;   	//事件ID
+	required int64						timeStamp = 2;		//采集时间戳
+	required int32 						pdId			= 3;
+	required int32 						portId 		= 4;
+	required EDT_HMLOGINFO_T	logInfo		= 5;		//HM日志信息
+}
+
+//HM头部信息获取——tjw
+message EDT_HM_VTHREADS_CTX{
+    required int32      hmInitialized=1;  					//initialization boolean   
+    required int32      ehMsgQId=2;       					// message queue ID         
+    required int32      ehTaskId=3;       					// task ID                  
+    required int32     	vThreads_attributes=4;     	// HM attributes (vThreads) 
+}
+
+
+message EDT_HMHEADINFO_T{
+	required int32 	pdId = 1;													//pdId of partition
+	required int32 	partitionNumber = 2;							//range 1 -  MAX_NUMBER_OF_PARTITIONS
+	required int32	hmQueueId = 3;										//part/module HM Queue
+	required int32 	hmStackSize = 4;									//HM task stack size 
+	required int32 	hmMaxQueueDepth = 5;							//maximum queue depth 
+	required int32 	queueThreshold = 6;								//threshold within queue at which to suspend notifications  
+	required int32 	hmTaskId = 7;											//part/module HM task 
+	required int32 	semId = 8;												//syncronization sem
+	required int32 	hmCallback = 9;										//HM callback        
+	required int32	notificationHandler = 10;					//notif function ptr 
+	required int32 	notifQueueId = 11;								//notification queue 
+	required int32 	notifMaxQueueDepth = 12;					//max queue depth for notifications
+	required int32 	eventFilterMask = 13;							//bit 0 = event 0 , ARINC events = 1-8 
+	required string trustedPartitionsMask = 14;				//partition mask bitset ,bit offset= partId
+	required int32	pLog = 15;												//pointer to log        
+	required int32 	logHead = 16;											//log head              
+	required int32 	logTail = 17;											//log tail              
+	required int32 	maxLogEntries = 18;								//max number log entries
+	required int32	pCfgRecord = 19;									//pointer to CORE_OS_CFG_RECORD or PARTITION_CFG_RECORD
+	required int32	errorCode = 20;                  	//error code - used for debugging since HM is initialized before I/O
+	required int32	attributes = 21;                  //HM attributes
+	required EDT_HM_VTHREADS_CTX	vThreadsCtx = 22;  	//vThreads HM context
+	required int32	logEntriesThreshold = 23;         //max number of used log entries allowed 
+	required int32	logStatEntriesTotal = 24;         //cumulative log entries       
+	required int32	logStatEntriesMax = 25;           //max number log enties in queue            
+	required int32	logStatNumEventsOverwritten = 26; //# of events that have been lost in log queue (overwritten)          
+	repeated int32 	pHmTbl = 27;											//pointer to HM table
+
+}
+
+message EDT_HM_HEAD_INFO
+{
+	required int32 						evtId     = 1;   	//事件ID
+	required int64						timeStamp = 2;		//采集时间戳
+	required int32 						pdId			= 3;
+	required int32 						portId 		= 4;
+	required EDT_HMHEADINFO_T	headInfo	= 5;		//HM头部信息
+}
+/////////////////////////////////////////////////////////////////////////////////////////////End tjw
+
+
