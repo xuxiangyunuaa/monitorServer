@@ -1,4 +1,5 @@
 package org.nit.monitorserver.handler.data;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
@@ -21,6 +22,8 @@ import org.nit.monitorserver.util.Tools;
 import io.vertx.ext.sql.SQLClient;
 import org.nit.monitorserver.database.MysqlConnection;
 
+
+import javax.lang.model.element.Element;
 
 import static org.nit.monitorserver.constant.ResponseError.*;
 
@@ -104,56 +107,81 @@ public class SearchHistoryData extends AbstractRequestHandler {
                         int size = rq.result().size();
                         HashMap<String,String> drt_id_targetIP = new HashMap<>();
                         String query = "SELECT drt_id,drt_eventtype,drt_timestamp FROM detrcd_raws_table";
-                        String whereEvtId = new String();
+                        List<JsonObject> dataList = new ArrayList<>();
+
                         for(int i = 0; i < size; i ++){
                             String taskID = rq.result().get(i).getString("id");
                             String drt_idElement = rq.result().get(i).getString("drt_id");
                             String targetIPElement = rq.result().get(i).getString("targetIP");
+                            String whereEvtId = " WHERE drt_id = "+drt_idElement;//不区分eventtype
                             drt_id_targetIP.put(drt_idElement,targetIPElement);
-                            JsonObject searchEvtIdObject = new JsonObject();
+
                             JsonArray defaultEvtId = rq.result().get(i).getJsonArray("defaultEvtId");
-                            for(int j = 0; j <defaultEvtId.size(); j ++){
-                                whereEvtId = whereEvtId + "eventtype = "+ defaultEvtId.getValue(j).toString()
-                            }
-
-                        }
-
-                        int whereLength = where.length();
-                        String subWhere = where.substring(0,whereLength-3);
-                        String query = "SELECT drt_id,drt_eventtype,drt_timestamp FROM detrcd_raws_table"+" "+subWhere;
-                        if(evtIdFinal != -1){
-                            query = query + " AND eventtype = "+evtIdFinal+";";//加入前端筛选条件
-                        }else {
-                            query = query+";";
-                        }
-                        mySQLClient.query(query,rs->{
-                            if(rs.failed()){
-                                logger.error(String.format("search raw communicationData: %s 查找失败", Tools.getTrace(rs.cause())));
-                                response.error(QUERY_FAILURE.getCode(), QUERY_FAILURE.getMsg());
-                                return;
-                            }else if(rs.result().getNumRows()> 0){
-                                int sizeCom = rs.result().getNumRows();//满足条件的mysql记录数
-                                List<JsonObject> dataList = new ArrayList<>();
-                                for(int i = 0 ; i < sizeCom; i++){
-                                    JsonObject element = rs.result().getRows().get(i);
-                                    String drt_id = element.getString("drt_id");
-                                    String id = drt_id_id.get(drt_id+element.getString("eventtype"));//数据id
-                                    if( id != null && !id.equals("")){
-                                        JsonObject listElement = new JsonObject()
-                                                .put("id",id)
-                                                .put("targetIP",drt_id_targetIP.get(drt_id))
-                                                .put("eventID",element.getString("eventtype"))
-                                                .put("timeStamp",element.getString("timestamp"));
-                                        dataList.add(listElement);
-                                    }
-
+                            if(evtIdFinal == -1){//不区分evt
+                                whereEvtId = whereEvtId.substring(0,whereEvtId.length()-2)+" AND";
+                                for(int j = 0; j <defaultEvtId.size(); j ++){
+                                    whereEvtId = whereEvtId + " eventtype = "+ defaultEvtId.getValue(j).toString()+" OR";
                                 }
-                                logger.info("历史通信数据获取成功");
-                                response.success(new JsonObject().put("dataList",dataList));
-                                return;
+                                whereEvtId = whereEvtId.substring(0,whereEvtId.length()-2)+";";
+                            }else {
+                                whereEvtId = whereEvtId.substring(0,whereEvtId.length()-1)+" AND eventtype = "+evtIdFinal;
                             }
+                            query = query+whereEvtId;
+                            mySQLClient.query(query,rs->{
+                                if(rs.failed()){
+                                    logger.error(String.format("search raw communicationData: %s 查找失败", Tools.getTrace(rs.cause())));
+                                    response.error(QUERY_FAILURE.getCode(), QUERY_FAILURE.getMsg());
+                                    return;
+                                }else if(rs.result().getNumRows() == 0){
 
-                        });
+                                }else {
+                                    int sizeCom = rs.result().getNumRows();
+                                    for(JsonObject element: rs.result().getRows()){
+                                        String id = taskID+"&"+element.getString("eventtype");
+                                        element.put("targetIP",drt_id_targetIP.get(element.getString("drt_id")))
+                                        .put("id",id);
+                                        dataList.add(element);
+                                    }
+                                }
+                            });
+                        }
+
+//                        int whereLength = where.length();
+//                        String subWhere = where.substring(0,whereLength-3);
+//                        String query = "SELECT drt_id,drt_eventtype,drt_timestamp FROM detrcd_raws_table"+" "+subWhere;
+//                        if(evtIdFinal != -1){
+//                            query = query + " AND eventtype = "+evtIdFinal+";";//加入前端筛选条件
+//                        }else {
+//                            query = query+";";
+//                        }
+//                        mySQLClient.query(query,rs->{
+//                            if(rs.failed()){
+//                                logger.error(String.format("search raw communicationData: %s 查找失败", Tools.getTrace(rs.cause())));
+//                                response.error(QUERY_FAILURE.getCode(), QUERY_FAILURE.getMsg());
+//                                return;
+//                            }else if(rs.result().getNumRows()> 0){
+//                                int sizeCom = rs.result().getNumRows();//满足条件的mysql记录数
+//                                List<JsonObject> dataList = new ArrayList<>();
+//                                for(int i = 0 ; i < sizeCom; i++){
+//                                    JsonObject element = rs.result().getRows().get(i);
+//                                    String drt_id = element.getString("drt_id");
+//                                    String id = drt_id_id.get(drt_id+element.getString("eventtype"));//数据id
+//                                    if( id != null && !id.equals("")){
+//                                        JsonObject listElement = new JsonObject()
+//                                                .put("id",id)
+//                                                .put("targetIP",drt_id_targetIP.get(drt_id))
+//                                                .put("eventID",element.getString("eventtype"))
+//                                                .put("timeStamp",element.getString("timestamp"));
+//                                        dataList.add(listElement);
+//                                    }
+//
+//                                }
+//                                logger.info("历史通信数据获取成功");
+//                                response.success(new JsonObject().put("dataList",dataList));
+//                                return;
+//                            }
+//
+//                        });
 
 
 

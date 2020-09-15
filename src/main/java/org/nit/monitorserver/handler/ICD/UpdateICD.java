@@ -101,9 +101,9 @@ public class UpdateICD extends AbstractRequestHandler {
                 return;
             }
             JsonObject result = new JsonObject();
-            response.success(result);info
+            response.success(result);
             logger.info("更新ICD成功："+id);
-            createLog.createLogRecord("ICD管理","","更新ICD",String.format("ICD:%s 更新成功",id));
+            createLog.createLogRecord("ICD管理","info","更新ICD",String.format("ICD:%s 更新成功",id));
             return;
         });
 
