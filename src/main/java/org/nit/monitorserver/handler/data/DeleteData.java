@@ -9,6 +9,7 @@ import org.nit.monitorserver.database.MongoConnection;
 import org.nit.monitorserver.message.AbstractRequestHandler;
 import org.nit.monitorserver.message.Request;
 import org.nit.monitorserver.message.ResponseFactory;
+import org.nit.monitorserver.util.FormValidator;
 import org.nit.monitorserver.util.Tools;
 
 import java.io.IOException;
@@ -31,51 +32,58 @@ public class DeleteData extends AbstractRequestHandler {
         routingContext.response().putHeader(HttpHeaderContentType.CONTENT_TYPE_STR, HttpHeaderContentType.JSON);
         ResponseFactory response = new ResponseFactory(routingContext, request);
 
-        JsonObject deleteObject = new JsonObject();
-        String id = request.getParams().getString("id");
-        if(id.equals("") || id == null){
-            logger.error(String.format("delete exception: %s", "采集数据id为必填参数"));
+        Object idObject = request.getParams().getValue("id");
+        if(idObject == null || idObject.toString().equals("")){
+            logger.error(String.format("delete data exception: %s", "数据管理的id为必填参数"));
             response.error(DATAID.getCode(), DATAID.getMsg());
             return;
         }
-        deleteObject.put("id",id);
-        mongoClient.removeDocuments("collectionData",deleteObject,r->{
-            if(r.failed()){
-                logger.error(String.format("delete exception: %s", Tools.getTrace(r.cause())));
-                response.error(DELETE_FAILURE.getCode(), DELETE_FAILURE.getMsg());
-                return;
-            }
-            JsonObject result = new JsonObject();
-            response.success(result);
-        });
-//        if(eventTypeObject != null){
-//            if(!FormValidator.isJsonObject(eventTypeObject)){
-//                logger.error(String.format("delete exception: %s", "事件id为必填参数"));
-//                response.error(EVENTTYPE_FORMAT_ERROR.getCode(), EVENTTYPE_FORMAT_ERROR.getMsg());
-//                return;
-//            }
-//            JsonObject eventType = (JsonObject) eventTypeObject;
-//            JsonObject eventTypeJsonObject = new JsonObject();
-//            Object eventIDObject = eventType.getInteger("eventID");
-//            if(eventIDObject != null){
-//                if(!FormValidator.isInteger(eventIDObject)){
-//                    logger.error(String.format("delete exception: %s", "事件类型ID为必填参数"));
-//                    response.error(EVENTID_FORMAT_ERROR.getCode(), EVENTID_FORMAT_ERROR.getMsg());
-//                    return;
-//                }
-//                int eventID = (int) eventIDObject;
-//                eventTypeJsonObject.put("eventID",eventID);
-//            }
-//            deleteObject.put("eventType",eventType);
-//
-//
-//
-//        }
+        if(!FormValidator.isString(idObject)){
+            logger.error(String.format("delete ICD exception: %s", "ICD的id格式错误"));
+            response.error(DATAID_FORMAT_ERROR.getCode(), DATAID_FORMAT_ERROR.getMsg());
+            return;
+        }
+        String id = idObject.toString();
+        JsonObject deleteObject = new JsonObject().put("id",id);
 
+        Object dataTypeObject = request.getParams().getValue("dataType");
+        if(dataTypeObject == null){
+            logger.error(String.format("delete data exception: %s", "数据管理的id为必填参数"));
+            response.error(DATAID.getCode(), DATAID.getMsg());
+            return;
+        }
+        if(!FormValidator.isInteger(dataTypeObject)){
+            response.error(DATATYPE_FORMAT_ERROR.getCode(),DATATYPE_FORMAT_ERROR.getMsg());
+            logger.error(String.format("search historyTdr exception: %s", "事件类型格式错误"));
+            return;
+        }
+        int dataType = (int) dataTypeObject;
+        if(dataType != 0 && dataType != 1){
+            response.error(DATATYPE_FORMAT_ERROR.getCode(),DATATYPE_FORMAT_ERROR.getMsg());
+            logger.error(String.format("search historyTdr exception: %s", "事件类型格式错误"));
+            return;
+        }
+        if(dataType == 0){
+            mongoClient.findOneAndDelete("comdrt",deleteObject,r->{
+                if(r.failed()){
+                    logger.error(String.format("delete data: %s 删除失败",id));
+                    response.error(DELETE_FAILURE.getCode(), DELETE_FAILURE.getMsg());
+                    return;
+                }
+                JsonObject result = new JsonObject();
+                response.success(result);
+            });
 
-
-
-
-
+        }else {
+            mongoClient.findOneAndDelete("targetIPEvtId",deleteObject,r->{
+                if(r.failed()){
+                    logger.error(String.format("delete data: %s 删除失败",id));
+                    response.error(DELETE_FAILURE.getCode(), DELETE_FAILURE.getMsg());
+                    return;
+                }
+                JsonObject result = new JsonObject();
+                response.success(result);
+            });
+        }
     }
 }

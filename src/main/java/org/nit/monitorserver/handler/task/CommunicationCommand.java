@@ -2376,7 +2376,7 @@ public class CommunicationCommand extends AbstractRequestHandler {
 //                udpPacket.setCurrLength(edttdrcfgctrmsg.toByteString().size()).setTotalLength(edttdrcfgctrmsg.toByteString().size()).setBuffers(edttdrcfgctrmsg.toByteString());
 ////            udpPacket_analysis.setCurrLength(edtdataanalysiscfg.toByteString().size()).setTotalLength(edtdataanalysiscfg.toByteString().size()).setBuffers(edtdataanalysiscfg.toByteString());
 //
-//                ByteString test=udpPacket.build().getBuffers();
+//                ByteString task=udpPacket.build().getBuffers();
 //                System.out.println(udpPacket.build().getBuffers());
 ////            System.out.println(HdpMsg.EDT_TDR_CFGCTR_MSG.parseFrom(cmd.toByteString()));
 //
@@ -2498,7 +2498,7 @@ public class CommunicationCommand extends AbstractRequestHandler {
 ////                udpPacket.setCurrLength(edttdrcfgctrmsg.toByteString().size()).setTotalLength(edttdrcfgctrmsg.toByteString().size()).setBuffers(edttdrcfgctrmsg.toByteString());
 //            udpPacket_analysis.setCurrLength(edtdataanalysiscfg.toByteString().size()).setTotalLength(edtdataanalysiscfg.toByteString().size()).setBuffers(edtdataanalysiscfg.toByteString());
 //
-//            ByteString test=udpPacket_analysis.build().getBuffers();
+//            ByteString task=udpPacket_analysis.build().getBuffers();
 //            System.out.println(udpPacket_analysis.build().getBuffers());
 ////            System.out.println(HdpMsg.EDT_TDR_CFGCTR_MSG.parseFrom(cmd.toByteString()));
 //            DatagramSocket commandSendsocket=vertx.createDatagramSocket();
@@ -2772,7 +2772,7 @@ public class CommunicationCommand extends AbstractRequestHandler {
 //            udpPacket.setCurrLength(edttdrcfgctrmsg.toByteString().size()).setTotalLength(edttdrcfgctrmsg.toByteString().size()).setBuffers(edttdrcfgctrmsg.toByteString());
 ////            udpPacket_analysis.setCurrLength(edtdataanalysiscfg.toByteString().size()).setTotalLength(edtdataanalysiscfg.toByteString().size()).setBuffers(edtdataanalysiscfg.toByteString());
 //
-//            ByteString test=udpPacket.build().getBuffers();
+//            ByteString task=udpPacket.build().getBuffers();
 //            System.out.println(udpPacket.build().getBuffers());
 ////            System.out.println(HdpMsg.EDT_TDR_CFGCTR_MSG.parseFrom(cmd.toByteString()));
 //

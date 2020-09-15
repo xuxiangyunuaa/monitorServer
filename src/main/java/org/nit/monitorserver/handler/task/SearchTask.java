@@ -9,11 +9,15 @@ import org.nit.monitorserver.database.MongoConnection;
 import org.nit.monitorserver.message.AbstractRequestHandler;
 import org.nit.monitorserver.message.Request;
 import org.nit.monitorserver.message.ResponseFactory;
+import org.nit.monitorserver.util.FormValidator;
 import org.nit.monitorserver.util.Tools;
 
+import javax.swing.*;
 import java.io.IOException;
 
 import static org.nit.monitorserver.constant.ResponseError.QUERY_FAILURE;
+import static org.nit.monitorserver.constant.ResponseError.TARGETIP_FORMAT_ERROR;
+import static org.nit.monitorserver.constant.ResponseError.TASKNAME_FORMAT_ERROR;
 
 /**
  * @ClassName SearchProject
@@ -34,14 +38,31 @@ public class SearchTask extends AbstractRequestHandler {
         ResponseFactory response = new ResponseFactory(routingContext, request);
 
         JsonObject searchObject = new JsonObject();
-        String taskName = request.getParams().getString("taskName");
-        if(!taskName.equals("") && taskName != null){
+        //taskName
+        Object taskNameObject = request.getParams().getValue("taskName");
+        if(taskNameObject != null && !taskNameObject.toString().equals("")){
+            if(!FormValidator.isString(taskNameObject)){
+                logger.error(String.format("search task exception: %s", "采集任务名称格式错误"));
+                response.error(TASKNAME_FORMAT_ERROR.getCode(), TASKNAME_FORMAT_ERROR.getMsg());
+                return;
+            }
+            String taskName = (String) taskNameObject;
             searchObject.put("taskName",taskName);
         }
-        String targetIP = request.getParams().getString("targetIP");
-        if(!targetIP.equals("") && targetIP != null){
+
+
+        //targetIP
+        Object targetIPObject = request.getParams().getValue("targetIP");
+        if(targetIPObject != null && !targetIPObject.toString().equals("")){
+            if(!FormValidator.isString(targetIPObject)){
+                logger.error(String.format("search task exception: %s", "目标机ip格式错误"));
+                response.error(TARGETIP_FORMAT_ERROR.getCode(), TARGETIP_FORMAT_ERROR.getMsg());
+                return;
+            }
+            String targetIP = (String) targetIPObject;
             searchObject.put("targetIP",targetIP);
         }
+
 
         mongoClient.find("task",searchObject,r->{
             if(r.failed()){

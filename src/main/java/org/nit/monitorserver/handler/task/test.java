@@ -24,8 +24,8 @@
 // * @Author: 20643
 // * @Date: 2020-9-1 14:34
 // */
-//public class test {
-//    protected static final Logger logger = Logger.getLogger(org.nit.monitorserver.database.test.class);
+//public class task {
+//    protected static final Logger logger = Logger.getLogger(org.nit.monitorserver.database.task.class);
 //    final static Vertx vertx = Vertx.vertx();
 //    private static String idPrevious = null;
 //

@@ -1,6 +1,5 @@
 package org.nit.monitorserver.handler.data;
 
-import com.mysql.cj.x.protobuf.MysqlxCrud;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
@@ -21,12 +20,12 @@ import static org.nit.monitorserver.constant.ResponseError.*;
 /**
  * @author 20817
  * @version 1.0
- * @className SearchDetailData
+ * @className SearchDetailHistoryData
  * @description
  * @date 2020/9/8 21:15
  */
-public class SearchDetailData extends AbstractRequestHandler {
-    protected static final Logger logger = Logger.getLogger(SearchDetailData.class);
+public class SearchDetailHistoryData extends AbstractRequestHandler {
+    protected static final Logger logger = Logger.getLogger(SearchDetailHistoryData.class);
     private final MongoClient mongoClient = new MongoConnection().getMongoClient();
 
     @Override
@@ -34,15 +33,27 @@ public class SearchDetailData extends AbstractRequestHandler {
         routingContext.response().putHeader(HttpHeaderContentType.CONTENT_TYPE_STR, HttpHeaderContentType.JSON);
         ResponseFactory response = new ResponseFactory(routingContext, request);
 
-        String id = request.getParams().getString("id");
+        Object idObject = request.getParams().getValue("id");
+        if(!FormValidator.isString(idObject)){
+            logger.error(String.format("search detailHistoryData exception: %s", "targetIP+evtId记录id格式错误"));
+            response.error(TARGETEVTIDID_FORMAT_ERROR.getCode(), TARGETEVTIDID_FORMAT_ERROR.getMsg());
+            return;
+        }
+        String id = idObject.toString();
         if(id == null || id.equals("")){
             logger.error(String.format("search exception: %s", "targetIP+evtId记录id为必填参数"));
             response.error(TARGETEVTIDID.getCode(), TARGETEVTIDID.getMsg());
             return;
         }
-        String targetIP = request.getParams().getString("targetIP");
+        Object targetIPObject = request.getParams().getValue("targetIP");
+        if(!FormValidator.isString(targetIPObject)){
+            logger.error(String.format("search detailHistoryData exception: %s", "targetIP格式错误"));
+            response.error(ID_FORMAT_ERROR.getCode(), ID_FORMAT_ERROR.getMsg());
+            return;
+        }
+        String targetIP = targetIPObject.toString();
         if(targetIP == null || targetIP.equals("")){
-            logger.error(String.format("search exception: %s", "targetIP为必填参数"));
+            logger.error(String.format("search detailHistoryData exception: %s", "targetIP格式错误"));
             response.error(ID_IS_REQUIRED.getCode(), ID_IS_REQUIRED.getMsg());
             return;
         }

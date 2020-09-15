@@ -1,4 +1,5 @@
 package org.nit.monitorserver.handler.data;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.RoutingContext;
@@ -8,16 +9,26 @@ import org.nit.monitorserver.message.AbstractRequestHandler;
 import org.nit.monitorserver.message.Request;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.nit.monitorserver.message.ResponseFactory;
 import org.nit.monitorserver.util.FormValidator;
 import org.nit.monitorserver.util.Tools;
+import io.vertx.ext.sql.SQLClient;
+import org.nit.monitorserver.database.MysqlConnection;
+
 
 import static org.nit.monitorserver.constant.ResponseError.*;
 
-public class SearchData extends AbstractRequestHandler {
-    protected static final Logger logger = Logger.getLogger(SearchData.class);
+public class SearchHistoryData extends AbstractRequestHandler {
+    protected static final Logger logger = Logger.getLogger(SearchHistoryData.class);
     private final MongoClient mongoClient = new MongoConnection().getMongoClient();
+    private final SQLClient mySQLClient = new MysqlConnection().getMySQLClient();
+
 
     @Override
     public void handle(RoutingContext routingContext, Request request) throws IOException, Exception {
@@ -26,33 +37,158 @@ public class SearchData extends AbstractRequestHandler {
 
         JsonObject searchObject = new JsonObject();
         //targetIP
-        String targetIP = request.getParams().getString("targetIP");
-        if(targetIP != null && !targetIP.equals("")){
+        Object targetIPObject = request.getParams().getValue("targetIP");
+        String targetIP = new String();
+        if(targetIPObject != null && !targetIPObject.toString().equals("")){
+            if(!FormValidator.isString(targetIPObject)){
+                logger.error(String.format("search historyData exception: %s", "目标机IP格式错误"));
+                response.error(TARGETIP_FORMAT_ERROR.getCode(), TARGETIP_FORMAT_ERROR.getMsg());
+                return;
+            }
+            targetIP = targetIPObject.toString();
             searchObject.put("targetIP",targetIP);
         }
+
+
         //eventIP
         Object eventIDObject = request.getParams().getValue("eventID");
+        int evtId = -1;
         if(eventIDObject != null){
             if(!FormValidator.isInteger(eventIDObject)){
                 response.error(EVENTTYPE_FORMAT_ERROR.getCode(),EVENTTYPE_FORMAT_ERROR.getMsg());
-                logger.error(String.format("search exception: %s", "事件ID格式错误"));
+                logger.error(String.format("search historyTdr exception: %s", "事件ID格式错误"));
+                return;
             }
-            int evtId = (int) eventIDObject;
+            evtId = (int) eventIDObject;
             searchObject.put("evtId",evtId);
+        }
+        final int evtIdFinal =evtId;
+
+        //dataType
+        int dataType = -1;
+        Object dataTypeObject = request.getParams().getValue("dataType");
+        if(dataTypeObject != null){
+            if(!FormValidator.isInteger(dataTypeObject)){
+                response.error(DATATYPE_FORMAT_ERROR.getCode(),DATATYPE_FORMAT_ERROR.getMsg());
+                logger.error(String.format("search historyTdr exception: %s", "事件类型格式错误"));
+                return;
+            }
+            dataType = (int) dataTypeObject;
+            if(dataType != 0 && dataType != 1){
+                response.error(DATATYPE_FORMAT_ERROR.getCode(),DATATYPE_FORMAT_ERROR.getMsg());
+                logger.error(String.format("search historyTdr exception: %s", "事件类型格式错误"));
+                return;
+            }
+
+        }
+
+        //如果查看的是通信数据，需要获取玖翼Mysql
+        switch (dataType){
+            case 0://查看通信数据
+                JsonObject findElement = new JsonObject().put("$ne","0");
+                JsonObject findObject = new JsonObject().put("drt_id",findElement);//已经运行过的任务
+                if(targetIP != null){
+                    findObject.put("targetIP",targetIP);//增加前端过滤条件
+                }
+                mongoClient.find("task",findObject,rq->{
+                    if(rq.failed()){
+                        logger.error(String.format("search data : %s 查找失败", Tools.getTrace(rq.cause())));
+                        response.error(QUERY_FAILURE.getCode(), QUERY_FAILURE.getMsg());
+                        return;
+                    }else if(rq.result().size() == 0){//不存在满足条件的任务
+                        logger.info("search data: 记录不存在");
+                        response.success(new JsonObject());
+                        return;
+                    }else {
+                        String where = "WHERE";
+                        int size = rq.result().size();
+                        HashMap<String,String> drt_id_targetIP = new HashMap<>();
+                        String query = "SELECT drt_id,drt_eventtype,drt_timestamp FROM detrcd_raws_table";
+                        String whereEvtId = new String();
+                        for(int i = 0; i < size; i ++){
+                            String taskID = rq.result().get(i).getString("id");
+                            String drt_idElement = rq.result().get(i).getString("drt_id");
+                            String targetIPElement = rq.result().get(i).getString("targetIP");
+                            drt_id_targetIP.put(drt_idElement,targetIPElement);
+                            JsonObject searchEvtIdObject = new JsonObject();
+                            JsonArray defaultEvtId = rq.result().get(i).getJsonArray("defaultEvtId");
+                            for(int j = 0; j <defaultEvtId.size(); j ++){
+                                whereEvtId = whereEvtId + "eventtype = "+ defaultEvtId.getValue(j).toString()
+                            }
+
+                        }
+
+                        int whereLength = where.length();
+                        String subWhere = where.substring(0,whereLength-3);
+                        String query = "SELECT drt_id,drt_eventtype,drt_timestamp FROM detrcd_raws_table"+" "+subWhere;
+                        if(evtIdFinal != -1){
+                            query = query + " AND eventtype = "+evtIdFinal+";";//加入前端筛选条件
+                        }else {
+                            query = query+";";
+                        }
+                        mySQLClient.query(query,rs->{
+                            if(rs.failed()){
+                                logger.error(String.format("search raw communicationData: %s 查找失败", Tools.getTrace(rs.cause())));
+                                response.error(QUERY_FAILURE.getCode(), QUERY_FAILURE.getMsg());
+                                return;
+                            }else if(rs.result().getNumRows()> 0){
+                                int sizeCom = rs.result().getNumRows();//满足条件的mysql记录数
+                                List<JsonObject> dataList = new ArrayList<>();
+                                for(int i = 0 ; i < sizeCom; i++){
+                                    JsonObject element = rs.result().getRows().get(i);
+                                    String drt_id = element.getString("drt_id");
+                                    String id = drt_id_id.get(drt_id+element.getString("eventtype"));//数据id
+                                    if( id != null && !id.equals("")){
+                                        JsonObject listElement = new JsonObject()
+                                                .put("id",id)
+                                                .put("targetIP",drt_id_targetIP.get(drt_id))
+                                                .put("eventID",element.getString("eventtype"))
+                                                .put("timeStamp",element.getString("timestamp"));
+                                        dataList.add(listElement);
+                                    }
+
+                                }
+                                logger.info("历史通信数据获取成功");
+                                response.success(new JsonObject().put("dataList",dataList));
+                                return;
+                            }
+
+                        });
+
+
+
+                    }
+                });
+            case 1:
+                JsonObject searchAnaObject = new JsonObject();
+                if(targetIP != null){
+                    searchAnaObject.put("targetIP",targetIP);
+                }
+                if(evtId != -1){
+                    searchAnaObject.put("evtId",evtId);
+                }
+                mongoClient.find("targetIPEvtId",searchAnaObject,ra->{
+                    if(ra.failed()){
+                        logger.error(String.format("search raw analysisData: %s 查找失败", Tools.getTrace(ra.cause())));
+                        response.error(QUERY_FAILURE.getCode(), QUERY_FAILURE.getMsg());
+                        return;
+                    }else {
+                        logger.info("历史分析数据获取成功");
+                        JsonObject dataList = new JsonObject().put("dataList",ra.result());
+                        response.success(dataList);
+                        return;
+                    }
+
+                });
+
+
 
         }
 
 
 
-        mongoClient.find("targetIPEvtId",searchObject,r->{
-            if(r.failed()){
-                logger.error(String.format("search targetIP+evtId: %s 查找失败", Tools.getTrace(r.cause())));
-                response.error(QUERY_FAILURE.getCode(), QUERY_FAILURE.getMsg());
-                return;
-            }
-            JsonObject dataList = new JsonObject().put("dataList",r.result());
-            response.success(dataList);
-        });
+
+
 
 
 
@@ -101,8 +237,8 @@ public class SearchData extends AbstractRequestHandler {
 // * @Date 2020-9-1 14:45
 // * @Version 1.0
 // **/
-//public class SearchData extends AbstractRequestHandler {
-//    protected static final Logger logger = Logger.getLogger(SearchData.class);
+//public class SearchHistoryData extends AbstractRequestHandler {
+//    protected static final Logger logger = Logger.getLogger(SearchHistoryData.class);
 //    private final MongoClient mongoClient = new MongoConnection().getMongoClient();
 //    private final SQLClient mySQLClient = new MysqlConnection().getMySQLClient();
 //

@@ -12,6 +12,7 @@ import org.nit.monitorserver.message.Request;
 import org.nit.monitorserver.message.ResponseFactory;
 import org.nit.monitorserver.util.FormValidator;
 import org.nit.monitorserver.util.Tools;
+import sun.awt.geom.AreaOp;
 
 import java.io.IOException;
 
@@ -35,51 +36,76 @@ public class GetLog extends AbstractRequestHandler {
 
         JsonObject searchObject = new JsonObject();
         //日志级别
-        String level = request.getParams().getString("level");
-        if(level.equals("") || level == null){
-            logger.error(String.format("search exception: %s", "日志级别为必填参数"));
+        Object levelObject = request.getParams().getValue("level");
+        if (levelObject == null || levelObject.toString().equals("")){
+            logger.error(String.format("search log exception: %s", "日志级别为必填参数"));
             response.error(LEVEL.getCode(), LEVEL.getMsg());
             return;
         }
+        if(!FormValidator.isString(levelObject)){
+            logger.error(String.format("search log exception: %s", "日志级别格式错误"));
+            response.error(LEVEL_FORMAT_ERROR.getCode(), LEVEL_FORMAT_ERROR.getMsg());
+            return;
+        }
+        String level = levelObject.toString();
+        if(!level.equals("error") && !level.equals("info") && !level.equals("all")){
+            logger.error(String.format("search log exception: %s", "日志级别格式错误"));
+            response.error(LEVEL_FORMAT_ERROR.getCode(), LEVEL_FORMAT_ERROR.getMsg());
+            return;
+        }
         searchObject.put("level",level);
-        //开始时间
-        JsonObject timeZoneObject = new JsonObject();
-        String startTime = request.getParams().getString("startTime");
-        if(startTime.equals("") || startTime == null){
-            startTime = "1949-10-1 00:00:00";
-        }
-        //结束时间
-        String endTime = request.getParams().getString("endTime");
-        if(endTime.equals("") || endTime == null){
-            endTime = "2050-01-01 00:00:00";
-        }
-        JsonArray timeZoneArray = new JsonArray();
-        JsonObject startTimeObject = new JsonObject().put("dataTime",new JsonObject().put("$gte",startTime));
-        JsonObject endTimeObject = new JsonObject().put("dataTime",new JsonObject().put("$lte",endTime));
-        timeZoneArray.add(startTimeObject).add(endTimeObject);
-        searchObject.put("$and",timeZoneArray);
-        //事件ID
-        Object eventIDObject = request.getValue("eventID");
-        if(eventIDObject != null){
-            if(FormValidator.isInteger(eventIDObject)){
-                int eventID = (int) eventIDObject;
-                searchObject.put("eventID",eventID);
 
-            }
+        //开始时间
+
+        Object startTimeObject = request.getParams().getValue("startTime");
+        String startTime = new String();
+        if(startTimeObject == null || startTimeObject.toString().equals("")){
+            startTime = "1949-10-1 00:00:00";
+        }else if(!FormValidator.isString(startTimeObject)){
+            logger.error(String.format("search log exception: %s", "开始时间格式错误"));
+            response.error(STARTTIME_FORMAT_ERROR.getCode(), STARTTIME_FORMAT_ERROR.getMsg());
+            return;
+        }else {
+            startTime = startTimeObject.toString();
         }
-        String targetIP = request.getParams().getString("targetIP");
-        if(!targetIP.equals("") && targetIP != null){
-            searchObject.put("targetIP",targetIP);
+
+
+
+        //结束时间
+        Object endTimeObject = request.getParams().getValue("endTime");
+        String endTime = new String();
+        if(endTimeObject == null || endTimeObject.toString().equals("")){
+            endTime = "2050-10-1 00:00:00";
+        }else if(!FormValidator.isString(endTimeObject)){
+            logger.error(String.format("search log exception: %s", "结束时间格式错误"));
+            response.error(ENDTIME_FORMAT_ERROR.getCode(), ENDTIME_FORMAT_ERROR.getMsg());
+            return;
+        }else {
+            endTime = endTimeObject.toString();
+        }
+
+        JsonArray timeZoneArray = new JsonArray();
+        JsonObject startTimeZone = new JsonObject().put("timeStamp",new JsonObject().put("$gte",startTime));
+        JsonObject endTimeZone = new JsonObject().put("timeStamp",new JsonObject().put("$lte",endTime));
+        timeZoneArray.add(startTimeObject).add(startTimeObject);
+        searchObject.put("$and",timeZoneArray);
+
+        //module
+        Object moduleObject = request.getParams().getValue("module");
+        if(moduleObject != null && moduleObject.toString().equals("")){
+            if(!FormValidator.isString(moduleObject)){
+                logger.error(String.format("search log exception: %s", "模块名称格式错误"));
+                response.error(MODULENAME_FORMAT_ERROR.getCode(), MODULENAME_FORMAT_ERROR.getMsg());
+                return;
+            }
+            String module = moduleObject.toString();
+            searchObject.put("module",module);
         }
         //数据库查询
         mongoClient.find("log",searchObject,r->{
             if(r.failed()){
-                logger.error(String.format("find log exception: %s", Tools.getTrace(r.cause())));
+                logger.error(String.format("search log exception: %s", Tools.getTrace(r.cause())));
                 response.error(DATA_QUERY_ERROR.getCode(), DATA_QUERY_ERROR.getMsg());
-                return;
-            }else if(r.result().size() == 0){
-                logger.error(String.format("find log exception: %s","记录不存在"));
-                response.error(RECORD_NOT_EXISTED.getCode(), RECORD_NOT_EXISTED.getMsg());
                 return;
             }
             JsonObject logList = new JsonObject();

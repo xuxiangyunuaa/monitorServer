@@ -63,6 +63,7 @@ public enum ResponseError {
     ENDTIME_IS_REQUIRED(10013, "endTime为必填参数"),
     INPUT_QUERY_WITHOUT_RESULT(10014, "查询到 0 条结果"),
     DATATYPE_FORMAT_ERROR(10015, "dataType格式非法"),
+    DATATYPE(10016,"dataType为必填参数"),
 
 
     //目标机管理模块
@@ -78,7 +79,11 @@ public enum ResponseError {
     COMMANDCONTENT_IS_REQUIRED(20009, "指令集内容为必填参数。"),
     NEW_COMMAND_ERROR(20010, "请检查指令集名称或指令集内容是否为空。"),
     COMMAND_SEND_ERROR(20011, "指令发送失败,请检查指令格式！"),
-    ID_IS_REQUIRED(20012, "目标机id为必填参数。"),
+    ID_IS_REQUIRED(20012, "目标机id为必填参数"),
+    ID_FORMAT_ERROR(20013,"目标机id格式错误"),
+    TARGETMACHINENAME_FORMAT_ERROR(20014,"目标机名称格式错误"),
+    TARGETMACHINEOS_FORMAT_ERROR(20015,"目标机OS格式错误"),
+    TARGETMACHINEIP_FORMAT_ERROR(20016,"目标机IP格式错误"),
 
     //数据采集模块
     COMMAND_CONFIG_ERROR(30001,"采集配置参数错误，请检查参数！"),
@@ -90,7 +95,7 @@ public enum ResponseError {
     ICDNAME_IS_REQUIRED(40021,"ICD名称为必填参数"),
     ICDID_IS_REQUIRED(20012, "ICD的id为必填参数。"),
     ICD_IS_REQUIRED(40000, "ICD为必填参数。"),
-    ICD_FORMAT_ERROR(10004, "ICD格式非法"),
+    ICD_FORMAT_ERROR(10004, "ICD格式错误"),
     MESSAGENAME_IS_REQUIRED(40001,"消息名称为必填参数"),
     PORTNAME_IS_REQUIRED(40002,"portName为必填参数"),
     BUS_IS_REQUIRED(40003,"所属总线名称为必填参数"),
@@ -111,6 +116,8 @@ public enum ResponseError {
     PARAMETERSTARTBIT(40018,"参数起始位为必填参数"),
     PARAMETERTYPE(40019,"参数类型"),
     PARAMETERUNIT(40020,"参数单位为必填参数"),
+    ICDNAME_FORMAT_ERROR(40021,"ICD名称格式错误"),
+    DATAID_FORMAT_ERROR(40023,"数据id格式错误"),
 
     //激励任务管理
     INCENTIVENAME(50001,"激励任务名称为必填参数"),
@@ -126,6 +133,8 @@ public enum ResponseError {
     DATAINCENTIVE_FAILURE(50010,"数据激励发送失败"),
     DATA_FORMAT_ERROR(50011,"激励数据格式错误"),
     DATAINCENTIVEISEXECUTING(50012,"存在数据激励任务正在执行"),
+    INCENTIVENAME_FORMAT_ERROR(50013,"激励任务名称格式错误"),
+    INCENTIVEID_FORMAT_ERROR(50014,"数据激励id格式错误"),
 
     //采集任务管理
     DEFAULTCHECKED(60000,"采集任务配置参数为必填参数"),
@@ -151,11 +160,26 @@ public enum ResponseError {
     SEARCHDATATYPE(60018,"查看采集任务数据类型格式错误"),
     DEFAULTCHECKED_FORMAT_ERRR(60019,"defaultChecked格式错误"),
     TARGETEVTIDID(60020,"targetIPEvtIDID为必填参数"),
+    TASKNAME(60021,"采集任务名称为必填参数"),
+    TASKNAME_FORMAT_ERROR(60022,"采集任务名称格式错误"),
+    TARGETIP_FORMAT_ERROR(60023,"目标机IP格式错误"),
+    ICDID_FORMAT_ERROR(60024,"ICDId格式错误"),
+    DEFAULTCHECKED_FORMAT_ERROR(60025,"采集任务配置参数格式错误"),
+    TASKID_FORMAT_ERROR(60026,"采集任务ID格式错误"),
+    TARGETEVTIDID_FORMAT_ERROR(60027,"targetIPEvtIDID为必填参数"),
+    TDRCFG_FORMAT_ERROR(60028,"通信配置格式错误"),
+    ANACFG_FORMAT_ERROR(60029,"分析配置格式错误"),
+    DEFAULTEVTID(60030,"配置参数的evtId为必填参数"),
+    DEFAULTEVTID_FORMAT_ERROR(60031,"配置参数的evtId格式错误"),
+
 
     //日志管理
     LEVEL(70000,"日志级别为必填参数"),
     LEVEL_FORMAT_ERROR(70001,"日志级别格式错误"),
-    LOGNAME(70002,"日志名称为必填参数"),
+    LOGID(70002,"日志名称为必填参数"),
+    MODULENAME_FORMAT_ERROR(70003,"模块名称格式错误"),
+    LOGID_FORMAT_ERROR(70004,"日志id格式错误"),
+
 
     //工程管理
     PROJECTNAME(80000,"工程名称为必填参数"),
@@ -169,7 +193,10 @@ public enum ResponseError {
     ENDTIME_FORMAT_ERROR(80008,"结束时间格式错误"),
     PORTID_FORMAT_ERROR(80010,"对象ID格式错误"),
     DATAID(80011,"采集数据ID为必填参数"),
-    FORMAT_FORMAT_ERROR(80012,"导出格式格式错误");
+    FORMAT_FORMAT_ERROR(80012,"导出格式格式错误"),
+    PROJECTNAME_FORMAT_ERROR(80013,"工程名称格式错误"),
+    CONTENT_FORMAT_ERROR(80014,"工程内容格式错误"),
+    PROJECTID_FORMAT_ERROR(80015,"工程id格式错误");
 
 
 

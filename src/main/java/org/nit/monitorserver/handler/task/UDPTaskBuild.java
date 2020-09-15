@@ -301,7 +301,7 @@ public class UDPTaskBuild {
                         sysevt_cfg.setEptInfo(cfg_ept);
                     }
                     if (SYSEVT_CFG.containsKey("edrInfo")) {//异常事件
-                        JsonObject CFG_EDR = SYSEVT_CFG.getJsonObject("CFG_EDR");
+                        JsonObject CFG_EDR = SYSEVT_CFG.getJsonObject("edrInfo");
                         cfg_edr.setEdrId(Integer.parseInt((String) CFG_EDR.getValue(GlobalConsts.EDRID)));
                         sysevt_cfg.setEdrInfo(cfg_edr);
                     }

@@ -7,9 +7,11 @@ import io.vertx.ext.web.RoutingContext;
 import org.apache.log4j.Logger;
 import org.nit.monitorserver.constant.HttpHeaderContentType;
 import org.nit.monitorserver.database.MongoConnection;
+import org.nit.monitorserver.handler.log.CreateLog;
 import org.nit.monitorserver.message.AbstractRequestHandler;
 import org.nit.monitorserver.message.Request;
 import org.nit.monitorserver.message.ResponseFactory;
+import org.nit.monitorserver.util.FormValidator;
 import org.nit.monitorserver.util.Tools;
 
 import java.util.regex.Matcher;
@@ -28,6 +30,7 @@ public class UpdateMachine extends AbstractRequestHandler {
     protected static final Logger logger = Logger.getLogger(UpdateMachine.class);
 //    private final SQLClient mySQLClient = new MysqlConnection().getMySQLClient();
     private final MongoClient mongoClient = new MongoConnection().getMongoClient();
+    CreateLog createLog = new CreateLog();
 
     @Override
     public void handle(final RoutingContext routingContext, final Request request) {
@@ -36,34 +39,75 @@ public class UpdateMachine extends AbstractRequestHandler {
         ResponseFactory response = new ResponseFactory(routingContext, request);
 
 //        int id = request.getParams().getInteger(TARGET_ID);
-        String id = request.getParams().getString("id");
-        System.out.println("id:"+id);
-        String name = request.getParams().getString("name");
-        String ip = request.getParams().getString("ip");
-        String os = request.getParams().getString("os");
+        Object idObject = request.getParams().getValue("id");
+
+        Object nameObject = request.getParams().getValue("name");
+        Object ipObject = request.getParams().getValue("ip");
+        Object osObject = request.getParams().getValue("os");
 
         // 验证非空
-        if (id == null || id .equals("")) {
-            logger.error(String.format("insert exception: %s", "目标机id为必填参数"));
+        if (idObject == null || idObject.toString().equals("")) {
+            logger.error(String.format("update exception: %s", "目标机id为必填参数"));
             response.error(ID_IS_REQUIRED.getCode(), ID_IS_REQUIRED.getMsg());
+            createLog.createLogRecord("目标机管理","error","更新目标机","目标机id为必填参数");
             return;
         }
+        if(!FormValidator.isString(idObject)){
+            logger.error(String.format("update exception: %s", "目标机id格式错误"));
+            response.error(ID_FORMAT_ERROR.getCode(), ID_FORMAT_ERROR.getMsg());
+            createLog.createLogRecord("目标机管理","error","更新目标机","目标机id格式错误");
+            return;
+        }
+        String id = idObject.toString();
 
         JsonObject updateCondition = new JsonObject().put("id",id);//定位
 
         JsonObject updateElement = new JsonObject();//
-        if (!name.equals("") && name != null) {
+        //name
+        if(nameObject != null && !nameObject.toString().equals("")){
+            if(!FormValidator.isString(nameObject)){
+                logger.error(String.format("update exception: %s", "目标机名称格式错误"));
+                response.error(TARGETMACHINENAME_FORMAT_ERROR.getCode(), TARGETMACHINENAME_FORMAT_ERROR.getMsg());
+                createLog.createLogRecord("目标机管理","error","更新目标机","目标机名称格式错误");
+                return;
+            }
+            String name = nameObject.toString();
             updateElement.put("name",name);
-
         }
-        if (!ip.equals("") && ip != null) {
+
+        //ip
+        if(ipObject != null && !ipObject.toString().equals("")){
+            if(!FormValidator.isString(ipObject)){
+                logger.error(String.format("update exception: %s", "目标机IP格式错误"));
+                response.error(TARGETIP_FORMAT_ERROR.getCode(), TARGETIP_FORMAT_ERROR.getMsg());
+                createLog.createLogRecord("目标机管理","error","更新目标机","目标机IP格式错误");
+                return;
+            }
+            String ip = ipObject.toString();
             updateElement.put("ip",ip);
         }
-        if(!os.equals("") && os != null){
+
+        //os
+        if(osObject != null && !osObject.toString().equals("")){
+            if(!FormValidator.isString(osObject)){
+                logger.error(String.format("update exception: %s", "目标机os格式错误"));
+                response.error(TARGETMACHINEOS_FORMAT_ERROR.getCode(), TARGETMACHINEOS_FORMAT_ERROR.getMsg());
+                createLog.createLogRecord("目标机管理","error","更新目标机","目标机IP格式错误");
+                return;
+            }
+            String os = osObject.toString();
             updateElement.put("os",os);
         }
 
-        JsonObject updateObject = new JsonObject().put("$set",updateElement);
+        JsonObject updateObject = new JsonObject();
+        if(!updateElement.toString().equals("{}")){
+            updateObject.put("$set",updateElement);
+        }else {
+            logger.info(String.format("update targetMachine: %s success:",id));
+            response.success(new JsonObject());
+            return;
+        }
+
 
 
 
@@ -125,12 +169,16 @@ public class UpdateMachine extends AbstractRequestHandler {
             if(r.failed()) {
                 logger.error(String.format("Update targetMachine exception: %s", Tools.getTrace(r.cause())));
                 response.error(UPDATE_TARGET_ERROR.getCode(), UPDATE_TARGET_ERROR.getMsg());
+                createLog.createLogRecord("目标机管理","error","更新目标机",String.format("目标机:%s 更新失败",id));
                 return;
             }
 
             logger.info("修改目标机成功："+ id);
             JsonObject result=new JsonObject();
             response.success(result);
+            createLog.createLogRecord("目标机管理","info","更新目标机",String.format("目标机:%s 更新成功",id));
+            return;
+
         });
 
 

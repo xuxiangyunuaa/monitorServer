@@ -6,10 +6,14 @@ import io.vertx.ext.web.RoutingContext;
 import org.apache.log4j.Logger;
 import org.nit.monitorserver.constant.HttpHeaderContentType;
 import org.nit.monitorserver.database.MongoConnection;
+import org.nit.monitorserver.handler.log.CreateLog;
 import org.nit.monitorserver.message.AbstractRequestHandler;
 import org.nit.monitorserver.message.Request;
 import org.nit.monitorserver.message.ResponseFactory;
+import org.nit.monitorserver.util.FormValidator;
 import org.nit.monitorserver.util.Tools;
+
+import java.util.concurrent.ForkJoinPool;
 
 import static org.nit.monitorserver.constant.ResponseError.*;
 import static org.nit.monitorserver.constant.TargetManageConsts.*;
@@ -27,6 +31,7 @@ public class CreateMachine extends AbstractRequestHandler {
     protected static final Logger logger = Logger.getLogger(CreateMachine.class);
 //    private final SQLClient mySQLClient = new MysqlConnection().getMySQLClient();
     private final MongoClient mongoClient = new MongoConnection().getMongoClient();
+    CreateLog createLog = new CreateLog();
 
 
     @Override
@@ -37,56 +42,98 @@ public class CreateMachine extends AbstractRequestHandler {
         routingContext.response().putHeader(HttpHeaderContentType.CONTENT_TYPE_STR, HttpHeaderContentType.JSON);
         ResponseFactory response = new ResponseFactory(routingContext, request);
 
+        JsonObject insertObject = new JsonObject();
+
+
+
+
         //日志管理
 //        mongoClient.insert("log",)
 
         //int id = request.getParams().getInteger(TARGET_ID);        //创建目标机不填写id
-        String name = request.getParams().getString(TARGET_NAME);
-        String ip = request.getParams().getString(TARGET_IP);
-        String os = request.getParams().getString(TARGET_OS);
-        System.out.println("name:"+name);
-        System.out.println("ip:"+ip);
-        System.out.println("os:"+os);
+        Object nameObject = request.getParams().getValue(TARGET_NAME);
+        Object ipObject = request.getParams().getValue(TARGET_IP);
+        Object osObject = request.getParams().getValue(TARGET_OS);
+
 
         // 验证非空
-        if ( name == null || name.equals("")) {
-            logger.error(String.format("insert exception: %s", "目标机名称为必填参数"));
+        if ( nameObject == null || nameObject.toString().equals("")) {
+            logger.error(String.format("create targetMachine exception: %s", "目标机名称为必填参数"));
             response.error(NAME_IS_REQUIRED.getCode(), NAME_IS_REQUIRED.getMsg());
+            createLog.createLogRecord("目标机管理","error","新建目标机","目标机名称为必填参数");
             return;
         }
-        if ( ip == null || ip.equals("")) {
-            logger.error(String.format("insert exception: %s", "目标机ip为必填参数"));
-            response.error(IP_IS_REQUIRED.getCode(), IP_IS_REQUIRED.getMsg());
+        if(!FormValidator.isString(nameObject)){
+            logger.error(String.format("create targetMachine exception: %s", "目标机名称格式错误"));
+            response.error(TARGETMACHINENAME_FORMAT_ERROR.getCode(), TARGETMACHINENAME_FORMAT_ERROR.getMsg());
+            createLog.createLogRecord("目标机管理","error","新建目标机","目标机名称格式错误");
             return;
+        }
+        String name = nameObject.toString();
+        insertObject.put("name",name);
+
+        //ip
+        if ( ipObject == null || ipObject.toString().equals("")) {
+            logger.error(String.format("create targetMachine exception: %s", "目标机IP为必填参数"));
+            response.error(IP_IS_REQUIRED.getCode(), IP_IS_REQUIRED.getMsg());
+            createLog.createLogRecord("目标机管理","error","新建目标机","目标机IP为必填参数");
+            return;
+        }
+        if(!FormValidator.isString(ipObject)){
+            logger.error(String.format("create targetMachine exception: %s", "目标机IP格式错误"));
+            response.error(TARGETIP_FORMAT_ERROR.getCode(), TARGETIP_FORMAT_ERROR.getMsg());
+            createLog.createLogRecord("目标机管理","error","新建目标机","目标机IP格式错误");
+
+            return;
+        }
+        String ip = ipObject.toString();
+        insertObject.put("ip",ip);
+
+        //OS
+        if(osObject !=null && !osObject.toString().equals("")){
+            if(!FormValidator.isString(osObject)){
+                logger.error(String.format("create targetMachine exception: %s", "目标机OS格式错误"));
+                response.error(TARGETMACHINEOS_FORMAT_ERROR.getCode(), TARGETMACHINEOS_FORMAT_ERROR.getMsg());
+                createLog.createLogRecord("目标机管理","error","新建目标机","目标机OS格式错误");
+                return;
+            }
+            String os=osObject.toString();
+            insertObject.put("os",os);
+
         }
 
-        String id = Tools.generateId();
-        JsonObject insertCondition = new JsonObject()
-                .put("id",id)
-                .put("name",name)
-                .put("ip",ip)
-                .put("os",os);
-        JsonObject searchObject = new JsonObject().put("name",name).put("ip",ip).put("os",os);
-        mongoClient.find("targetMachine",searchObject,re->{
+
+
+
+        mongoClient.find("targetMachine",insertObject,re->{//校验是否已存在
             if(re.failed()){
                 logger.error(String.format("search targetMachine: %s 查找失败", Tools.getTrace(re.cause())));
                 response.error(QUERY_FAILURE.getCode(), QUERY_FAILURE.getMsg());
+                createLog.createLogRecord("目标机管理","error","新建目标机","数据库查询目标机失败");
                 return;
-            }else if(re.result().size() == 0){
-                mongoClient.insert("targetMachine",insertCondition,r->{
+            }else if(re.result().size() == 0){//记录不存在
+
+                String id = Tools.generateId();
+                insertObject.put("id",id);
+                mongoClient.insert("targetMachine",insertObject,r->{
                     if(r.failed()){
                         logger.error(String.format("new targetMachne insert exception: %s", Tools.getTrace(r.cause())));
                         response.error(NEW_TARGET_ERROR.getCode(), NEW_TARGET_ERROR.getMsg());
+                        createLog.createLogRecord("目标机管理","error","新建目标机","目标机:%s 插入数据库失败");
                         return;
                     }
+                    createLog.createLogRecord("目标机管理","info","新建目标机",String.format("目标机:%s 插入数据库成功",id));
                     JsonObject result=new JsonObject();
                     result.put("id",id);
                     logger.info("创建目标机成功:"+id);
                     response.success(result);
+                    return;
                 });
             }else {
+                createLog.createLogRecord("目标机管理","error","新建目标机","目标机记录已经存在");
                 response.error(RECORD_EXISTED.getCode(),RECORD_EXISTED.getMsg());
                 logger.error(String.format("new target Machine insert exception: %s","该记录已经存在"));
+                return;
             }
         });
 

@@ -103,10 +103,10 @@ public class RequestProcessor {
         this.requestHandlerMap.put("task.delete",new DeleteTask());
         this.requestHandlerMap.put("task.update",new UpdateTask());
         this.requestHandlerMap.put("task.search",new SearchTask());
-        this.requestHandlerMap.put("task.ctr",new Ctr());
+        this.requestHandlerMap.put("task.ctr",new CtrTask());
 
         //数据管理
-//        this.requestHandlerMap.put("data.search",new SearchData());
+//        this.requestHandlerMap.put("data.search",new SearchHistoryData());
         this.requestHandlerMap.put("data.delete",new DeleteData());
 
 

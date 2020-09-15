@@ -34,6 +34,7 @@ public class StartupWithLocal {
     protected static final Logger logger = Logger.getLogger(StartupWithLocal.class);
     private static String idPrevious = null;
 
+
     public static void main(final String[] args) {
         Tools.initSystemProperties();
 
@@ -53,8 +54,10 @@ public class StartupWithLocal {
             //实例化 Server 对象
             final Server server = new Server();
             final ListenAcquisition listenAcquisition=new ListenAcquisition();
+//            final GenMonitorData genMonitorData = new GenMonitorData();
             vertx.deployVerticle(server);
             vertx.deployVerticle(listenAcquisition);
+//            vertx.deployVerticle(genMonitorData);
 
 
 //            if(args.length > 0){

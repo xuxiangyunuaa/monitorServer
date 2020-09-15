@@ -7,9 +7,12 @@ import io.vertx.ext.web.RoutingContext;
 import org.apache.log4j.Logger;
 import org.nit.monitorserver.constant.HttpHeaderContentType;
 import org.nit.monitorserver.database.MongoConnection;
+import org.nit.monitorserver.handler.log.CreateLog;
+import org.nit.monitorserver.handler.task.Create;
 import org.nit.monitorserver.message.AbstractRequestHandler;
 import org.nit.monitorserver.message.Request;
 import org.nit.monitorserver.message.ResponseFactory;
+import org.nit.monitorserver.util.FormValidator;
 import org.nit.monitorserver.util.Tools;
 
 import java.util.List;
@@ -27,6 +30,7 @@ public class SearchMachine extends AbstractRequestHandler {
     protected static final Logger logger = Logger.getLogger(SearchMachine.class);
 //    private final SQLClient mySQLClient = new MysqlConnection().getMySQLClient();
     private final MongoClient mongoClient = new MongoConnection().getMongoClient();
+    CreateLog createLog = new CreateLog();
 
     @Override
     public void handle(RoutingContext routingContext, Request request) {
@@ -34,9 +38,9 @@ public class SearchMachine extends AbstractRequestHandler {
         routingContext.response().putHeader(HttpHeaderContentType.CONTENT_TYPE_STR, HttpHeaderContentType.JSON);
         ResponseFactory response = new ResponseFactory(routingContext, request);
 
-        String name = request.getParams().getString("name");
-        String ip = request.getParams().getString("ip");
-        String os = request.getParams().getString("os");
+        Object nameObject = request.getParams().getValue("name");
+        Object ipObject = request.getParams().getValue("ip");
+        Object osObject = request.getParams().getValue("os");
 
 //        System.out.println(search_type);
 //        System.out.println(search_str);
@@ -56,16 +60,40 @@ public class SearchMachine extends AbstractRequestHandler {
 
 
         JsonObject condition = new JsonObject();
-
-        if(!name.equals("") && name != null){
+        //name
+        if(nameObject != null && !nameObject.toString().equals("")){
+            if(!FormValidator.isString(nameObject)){
+                logger.error(String.format("search targetMachine exception: %s", "目标机名称格式错误"));
+                response.error(TARGETMACHINENAME_FORMAT_ERROR.getCode(), TARGETMACHINENAME_FORMAT_ERROR.getMsg());
+                createLog.createLogRecord("目标机管理","error","查找目标机","目标机名称格式错误");
+                return;
+            }
+            String name = nameObject.toString();
             condition.put("name",name);
         }
-        if(!ip.equals("") && ip != null){
+        //ip
+        if(ipObject != null && !ipObject.toString().equals("")){
+            if(!FormValidator.isString(ipObject)){
+                logger.error(String.format("search targetMachine exception: %s", "目标机IP格式错误"));
+                response.error(TARGETMACHINEIP_FORMAT_ERROR.getCode(), TARGETMACHINEIP_FORMAT_ERROR.getMsg());
+                createLog.createLogRecord("目标机管理","error","查找目标机","目标机IP格式错误");
+                return;
+            }
+            String ip = ipObject.toString();
             condition.put("ip",ip);
         }
-        if(!os.equals("") && os != null){
+        //os
+        if(osObject != null && !osObject.toString().equals("")){
+            if(!FormValidator.isString(osObject)){
+                logger.error(String.format("search targetMachine exception: %s", "目标机OS格式错误"));
+                response.error(TARGETMACHINEOS_FORMAT_ERROR.getCode(), TARGETMACHINEOS_FORMAT_ERROR.getMsg());
+                createLog.createLogRecord("目标机管理","error","查找目标机","目标机OS格式错误");
+                return;
+            }
+            String os = osObject.toString();
             condition.put("os",os);
         }
+
 
         //根据条件确定sql
 
@@ -73,6 +101,7 @@ public class SearchMachine extends AbstractRequestHandler {
             if(r.failed()){
                 logger.error(String.format("find target exception: %s", Tools.getTrace(r.cause())));
                 response.error(DATA_QUERY_ERROR.getCode(), DATA_QUERY_ERROR.getMsg());
+                createLog.createLogRecord("目标机管理","error","查找目标机","目标机查找失败");
                 return;
             }
             JsonArray resultData = new JsonArray();
@@ -89,6 +118,9 @@ public class SearchMachine extends AbstractRequestHandler {
             JsonObject result = new JsonObject();
             result.put("machineList", resultData);
             response.success(result);
+            createLog.createLogRecord("目标机管理","info","查找目标机","目标机查找成功");
+            return;
+
 
 
 
