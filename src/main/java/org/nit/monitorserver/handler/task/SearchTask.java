@@ -6,6 +6,7 @@ import io.vertx.ext.web.RoutingContext;
 import org.apache.log4j.Logger;
 import org.nit.monitorserver.constant.HttpHeaderContentType;
 import org.nit.monitorserver.database.MongoConnection;
+import org.nit.monitorserver.handler.log.CreateLog;
 import org.nit.monitorserver.message.AbstractRequestHandler;
 import org.nit.monitorserver.message.Request;
 import org.nit.monitorserver.message.ResponseFactory;
@@ -30,6 +31,8 @@ public class SearchTask extends AbstractRequestHandler {
     protected static final Logger logger = Logger.getLogger(SearchTask.class);
     //    private final SQLClient mySQLClient = new MysqlConnection().getMySQLClient();
     private final MongoClient mongoClient = new MongoConnection().getMongoClient();
+    CreateLog createLog = new CreateLog();
+
 
 
     @Override
@@ -44,9 +47,10 @@ public class SearchTask extends AbstractRequestHandler {
             if(!FormValidator.isString(taskNameObject)){
                 logger.error(String.format("search task exception: %s", "采集任务名称格式错误"));
                 response.error(TASKNAME_FORMAT_ERROR.getCode(), TASKNAME_FORMAT_ERROR.getMsg());
+                createLog.createLogRecord("任务管理","error","查找任务","采集任务名称格式错误");
                 return;
             }
-            String taskName = (String) taskNameObject;
+            String taskName =  taskNameObject.toString();
             searchObject.put("taskName",taskName);
         }
 
@@ -57,9 +61,10 @@ public class SearchTask extends AbstractRequestHandler {
             if(!FormValidator.isString(targetIPObject)){
                 logger.error(String.format("search task exception: %s", "目标机ip格式错误"));
                 response.error(TARGETIP_FORMAT_ERROR.getCode(), TARGETIP_FORMAT_ERROR.getMsg());
+                createLog.createLogRecord("任务管理","error","查找任务","目标机ip格式错误");
                 return;
             }
-            String targetIP = (String) targetIPObject;
+            String targetIP =  targetIPObject.toString();
             searchObject.put("targetIP",targetIP);
         }
 
@@ -68,11 +73,15 @@ public class SearchTask extends AbstractRequestHandler {
             if(r.failed()){
                 logger.error(String.format("search 采集任务: %s 查找失败", Tools.getTrace(r.cause())));
                 response.error(QUERY_FAILURE.getCode(), QUERY_FAILURE.getMsg());
+                createLog.createLogRecord("任务管理","error","查找任务","采集任务查找失败");
                 return;
+
             }
             JsonObject taskList = new JsonObject();
             taskList.put("taskList",r.result());
             response.success(taskList);
+            createLog.createLogRecord("任务管理","info","查找任务","采集任务查找成功");
+
 
 
         });

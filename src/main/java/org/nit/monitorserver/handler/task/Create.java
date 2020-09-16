@@ -38,7 +38,7 @@ public class Create extends AbstractRequestHandler {
 
         //taskName
         Object taskNameObject = request.getParams().getValue("taskName");
-        if(taskNameObject.toString().equals("") || taskNameObject.toString() == null){
+        if(taskNameObject.toString().equals("") || taskNameObject == null){
             logger.error(String.format("create task exception: %s", "采集任务名称为必填参数"));
             response.error(TASKNAME.getCode(), TASKNAME.getMsg());
             createLog.createLogRecord("任务管理","error","新建任务","采集任务名称为必填参数");
@@ -51,14 +51,12 @@ public class Create extends AbstractRequestHandler {
             createLog.createLogRecord("任务管理","error","新建任务","采集任务名称格式错误");
             return;
         }
-        String taskName = (String) taskNameObject;
-
+        String taskName =  taskNameObject.toString();
         createObject.put("taskName",taskName);
 
         //targetIP
         Object targetIPObject = request.getParams().getValue("targetIP");
-        System.out.println("targetIP:"+targetIPObject);
-        if(targetIPObject.toString() == null || targetIPObject.toString().equals("")){
+        if(targetIPObject == null || targetIPObject.toString().equals("")){
             logger.error(String.format("create task exception: %s", "目标机IP为必填参数"));
             response.error(IP_IS_REQUIRED.getCode(), IP_IS_REQUIRED.getMsg());
             createLog.createLogRecord("任务管理","error","新建任务","目标机IP为必填参数");
@@ -70,15 +68,13 @@ public class Create extends AbstractRequestHandler {
             createLog.createLogRecord("任务管理","error","新建任务","目标机IP格式错误");
             return;
         }
-        String targetIP = (String) targetIPObject;
-
+        String targetIP = targetIPObject.toString();
         createObject.put("targetIP",targetIP);
 
 
         //ICDId
         Object ICDIdObject = request.getParams().getValue("ICDId");//ICD的id,可选参数
-        System.out.println("ICDId:"+ICDIdObject);
-        if(ICDIdObject.toString() == null || ICDIdObject.toString().equals("")){
+        if(ICDIdObject == null || ICDIdObject.toString().equals("")){
             logger.error(String.format("create task exception: %s", "ICD的Id为必填参数"));
             response.error(ICDID_IS_REQUIRED.getCode(), ICDID_IS_REQUIRED.getMsg());
             createLog.createLogRecord("任务管理","error","新建任务","ICD的d为必填参数");
@@ -90,8 +86,7 @@ public class Create extends AbstractRequestHandler {
             createLog.createLogRecord("任务管理","error","新建任务","ICD的d格式错误");
             return;
         }
-        String ICDId = (String) ICDIdObject;
-
+        String ICDId = ICDIdObject.toString();
         createObject.put("ICDId",ICDId);
 
         //defaultChecked
@@ -112,21 +107,22 @@ public class Create extends AbstractRequestHandler {
         JsonArray defaultChecked = (JsonArray)defaultCheckedObject;
         createObject.put("defaultChecked",defaultChecked);
 
-        Object defaultEvtIdObject = request.getParams().getValue("defaultEvtId");
-        if(defaultEvtIdObject == null || defaultEvtIdObject.toString().equals("[]")){
-            logger.error(String.format("create task exception: %s", "配置参数的evtId为必填参数"));
-            response.error(DEFAULTEVTID.getCode(), DEFAULTEVTID.getMsg());
-            createLog.createLogRecord("任务管理","error","新建任务","配置参数的evtId为必填参数");
-            return;
-        }
-        if(!FormValidator.isJsonArray(defaultEvtIdObject)){
-            logger.error(String.format("create task exception: %s", "配置参数的evtId格式错误"));
-            response.error(DEFAULTEVTID_FORMAT_ERROR.getCode(), DEFAULTEVTID_FORMAT_ERROR.getMsg());
-            createLog.createLogRecord("任务管理","error","新建任务","配置参数的evtId格式错误");
-            return;
-        }
-        JsonArray defaultEvtId = (JsonArray) defaultEvtIdObject;
-        createObject.put("defaultEvtId",defaultEvtId);
+//        Object defaultEvtIdObject = request.getParams().getValue("defaultEvtId");
+//        if(defaultEvtIdObject == null || defaultEvtIdObject.toString().equals("[]")){
+//            logger.error(String.format("create task exception: %s", "配置参数的evtId为必填参数"));
+//            response.error(DEFAULTEVTID.getCode(), DEFAULTEVTID.getMsg());
+//            createLog.createLogRecord("任务管理","error","新建任务","配置参数的evtId为必填参数");
+//            return;
+//        }
+//        if(!FormValidator.isJsonArray(defaultEvtIdObject)){
+//            logger.error(String.format("create task exception: %s", "配置参数的evtId格式错误"));
+//            response.error(DEFAULTEVTID_FORMAT_ERROR.getCode(), DEFAULTEVTID_FORMAT_ERROR.getMsg());
+//            createLog.createLogRecord("任务管理","error","新建任务","配置参数的evtId格式错误");
+//            return;
+//        }
+//        JsonArray defaultEvtId = (JsonArray) defaultEvtIdObject;
+//        createObject.put("defaultEvtId",defaultEvtId);
+
 
 
         //tdrCfg
@@ -151,34 +147,23 @@ public class Create extends AbstractRequestHandler {
                 createLog.createLogRecord("任务管理","error","新建任务","分析配置格式错误");
                 return;
             }
-
             JsonObject anaCfg = (JsonObject) anaCfgObject;
             createObject.put("anaCfg",anaCfg);
-
         }
 
         mongoClient.find("task",createObject,re->{
             if(re.failed()){
-                logger.error(String.format("search 采集任务: %s 查找失败", Tools.getTrace(re.cause())));
+                logger.error(String.format("search task exception: %s", Tools.getTrace(re.cause())));
                 response.error(QUERY_FAILURE.getCode(), QUERY_FAILURE.getMsg());
-                createLog.createLogRecord("任务管理","error","新建任务","查找分析任务失败");
+                createLog.createLogRecord("任务管理","error","新建任务","查找任务失败");
                 return;
             }else if(re.result().size()== 0){//在不存在相同采集任务时才插入数据库
                 String id = Tools.generateId();
                 createObject.put("id",id).put("runFlag",0).put("drt_id",0);//生成任务id
-                JsonArray evtIdList = new JsonArray();
-                for(int i = 0; i < defaultEvtId.size(); i++){
-                    int evtId = defaultEvtId.getInteger(i);
-                    String idLatest = id+evtId;
-                    JsonObject element = new JsonObject();
-                    element.put(idLatest,evtId);
-                    evtIdList.add(element);
-                }
-                createObject.put("defaultEvtId",evtIdList);
 
                 mongoClient.insert("task",createObject,r->{
                     if(r.failed()){
-                        logger.error(String.format("new task insert exception: %s", Tools.getTrace(r.cause())));
+                        logger.error(String.format("insert task exception: %s", Tools.getTrace(r.cause())));
                         response.error(INSERT_FAILURE.getCode(), INSERT_FAILURE.getMsg());
                         createLog.createLogRecord("任务管理","error","新建任务",String.format("采集任务：%s 插入数据库失败",id));
                         return;

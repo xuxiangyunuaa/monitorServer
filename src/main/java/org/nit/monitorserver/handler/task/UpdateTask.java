@@ -84,6 +84,8 @@ public class UpdateTask extends AbstractRequestHandler {
             updateObjectElement.put("targetIP",targetIP);
         }
 
+
+        //ICD
         Object ICDIdObject = request.getParams().getValue("ICDId");
         if(ICDIdObject != null && !ICDIdObject.toString().equals("")){
             if(!FormValidator.isString(ICDIdObject)){
@@ -98,7 +100,7 @@ public class UpdateTask extends AbstractRequestHandler {
 
         //通信配置
         Object tdrCfgObject = request.getParams().getValue("tdrCfg");
-        if(tdrCfgObject != null ){
+        if(tdrCfgObject != null && !tdrCfgObject.toString().equals("{}") ){
             if(!FormValidator.isJsonObject(tdrCfgObject)){
                 logger.error(String.format("update task exception: %s", "通信配置格式错误"));
                 response.error(TDRCFG_FORMAT_ERROR.getCode(), TDRCFG_FORMAT_ERROR.getMsg());
@@ -111,7 +113,7 @@ public class UpdateTask extends AbstractRequestHandler {
 
         //分析配置
         Object anaCfgObject = request.getParams().getValue("anaCfg");
-        if(anaCfgObject != null){
+        if(anaCfgObject != null && !anaCfgObject.toString().equals("{}")){
             if(!FormValidator.isJsonObject(anaCfgObject)){
                 logger.error(String.format("update task exception: %s", "分析配置格式错误"));
                 response.error(ANACFG_FORMAT_ERROR.getCode(), ANACFG_FORMAT_ERROR.getMsg());
@@ -135,18 +137,6 @@ public class UpdateTask extends AbstractRequestHandler {
             updateObjectElement.put("defaultChecked",defaultChecked);
         }
 
-        //配置参数的evtId
-        Object defaultEvtIdObject= request.getParams().getValue("defaultEvtId");
-        if(defaultEvtIdObject != null && !defaultEvtIdObject.toString().equals("[]")){
-            if(!FormValidator.isJsonArray(defaultEvtIdObject)){
-                logger.error(String.format("update task exception: %s", "配置参数EvtId格式错误"));
-                response.error(DEFAULTEVTID_FORMAT_ERROR.getCode(), DEFAULTEVTID_FORMAT_ERROR.getMsg());
-                createLog.createLogRecord("任务管理","error","更新任务","配置参数EvtId格式错误");
-                return;
-            }
-            JsonArray defaultEvtId = (JsonArray) defaultEvtIdObject;
-            updateObjectElement.put("defaultEvtId",defaultEvtId);
-        }
 
         JsonObject updateObject = new JsonObject();
         if(!updateObjectElement.toString().equals("{}")){
@@ -160,7 +150,7 @@ public class UpdateTask extends AbstractRequestHandler {
 
         mongoClient.findOneAndUpdate("task",update,updateObject,r->{
             if(r.failed()){
-                logger.error(String.format("UpdateProject task exception: %s", Tools.getTrace(r.cause())));
+                logger.error(String.format("Update task exception: %s", Tools.getTrace(r.cause())));
                 response.error(UPDATE_TARGET_ERROR.getCode(), UPDATE_TARGET_ERROR.getMsg());
                 createLog.createLogRecord("任务管理","error","更新任务",String.format("采集任务：%s 更新失败",id));
                 return;
